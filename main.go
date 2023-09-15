@@ -35,7 +35,7 @@ func testTokenizer() {
 }
 
 func testing(env *Environments) {
-	s := "let x = 10;x"
+	s := "const x = 10;x = 5"
 	p := newParser()
 	parsed, err := p.produceAST(s)
 	if err != nil {

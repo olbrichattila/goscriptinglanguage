@@ -35,8 +35,9 @@ func (e *Environments) assignVar(varName string, value RuntimeVal) (RuntimeVal, 
 		return nil, err
 	}
 
-	if _, exist := e.constants[varName]; exist {
-		return nil, fmt.Errorf("Variable %s already declared", varName)
+	_, exist := e.constants[varName]
+	if exist {
+		return nil, fmt.Errorf("Constant variable %s cannot be updated", varName)
 	}
 
 	env.variables[varName] = value

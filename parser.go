@@ -75,9 +75,9 @@ func (p *Parser) parseStmt() (Stmter, error) {
 }
 
 func (p *Parser) parseVarDeclaration() (Stmter, error) {
-	p.next()
+	tokenType := p.next().Type
 	token := p.at()
-	isConstant := token.Type == TokenTypeConst
+	isConstant := tokenType == TokenTypeConst
 	err := p.expect(TokenTypeIdentifier, "Expected identifier name following let or const keywords")
 	if err != nil {
 		return nil, err
@@ -123,7 +123,27 @@ func (p *Parser) parseVarDeclaration() (Stmter, error) {
 }
 
 func (p *Parser) parseExpr() (Stmter, error) {
-	return p.parseAdditiveExpr()
+	return p.parseAssignmentExpr()
+}
+
+func (p *Parser) parseAssignmentExpr() (Stmter, error) {
+	left, err := p.parseAdditiveExpr() // @todo swith this out with objects
+	if err != nil {
+		return nil, err
+	}
+
+	if p.at().Type == TokenTypeEquals {
+		p.next()
+		value, err := p.parseAssignmentExpr()
+		if err != nil {
+			return nil, err
+		}
+
+		return &AssignmentExpr{Stmt: &Stmt{kind: NodeTypeAssigmentExpr}, value: value, assigne: left}, nil
+
+	}
+
+	return left, nil
 }
 
 func (p *Parser) parseAdditiveExpr() (Stmter, error) {

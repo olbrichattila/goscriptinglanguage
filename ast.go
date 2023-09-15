@@ -11,6 +11,7 @@ const (
 	NodeTypeNumericLiteral  = "NumericLiteral"
 	NodeTypeIdentifier      = "Identifier"
 	NodeTypeBinaryExpession = "BinaryExpession"
+	NodeTypeAssigmentExpr   = "AssignmentExpr"
 )
 
 type Stmter interface {
@@ -56,4 +57,10 @@ type Identifier struct {
 type NumericLiteral struct {
 	*Stmt
 	value float64
+}
+
+type AssignmentExpr struct {
+	*Stmt
+	assigne Stmter
+	value   Stmter
 }

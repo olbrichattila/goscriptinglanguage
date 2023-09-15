@@ -51,8 +51,18 @@ Aty programming language
 &{1 11}
 ```
 
+### Variable assingnmets
+Example:
+
+```
+Aty programming language
+-------------------------
+-> let x = 10;
+x = x + 1
+
+```
+
 ## What comes.
-- Variable assignments,
 - loops
 - conditions
 - functions

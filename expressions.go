@@ -53,3 +53,16 @@ func (i *Interpreter) evalNumericBinaryExpr(lhs, rhs NumberVal, operator string)
 
 	return MK_NUMBER(result), nil
 }
+
+func (i *Interpreter) evalAssignment(node *AssignmentExpr, env *Environments) (RuntimeVal, error) {
+	if node.assigne.Kind() != NodeTypeIdentifier {
+		return nil, fmt.Errorf("Invalid LHS iside assignment expression")
+	}
+
+	varname := node.assigne.(*Identifier).symbol
+	evaulated, err := i.evaluate(node.value, env)
+	if err != nil {
+		return nil, err
+	}
+	return env.assignVar(varname, evaulated)
+}
