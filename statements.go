@@ -27,3 +27,15 @@ func (i *Interpreter) evalVarDeclaration(declaration *VariableDeclaration, env *
 		return env.declareVar(declaration.identifier, value, declaration.constant)
 	}
 }
+
+func (i *Interpreter) evalFunctionDeclaration(declaration *FunctionDeclaration, env *Environments) (RuntimeVal, error) {
+	fn := &FnValue{
+		Type:           ValueFunction,
+		name:           declaration.name,
+		declarationEnv: env,
+		paramaters:     declaration.parameters,
+		body:           declaration.body,
+	}
+
+	return env.declareVar(declaration.name, fn, true)
+}

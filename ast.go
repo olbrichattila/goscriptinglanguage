@@ -6,6 +6,7 @@ const (
 	// STATEMENTS
 	NodeTypeProgram             = "Program"
 	NodeTypeVariableDeclaration = "VariableDeclaration"
+	NodeTypeFunctionDeclaration = "FunctionDeclaration"
 
 	// EXPRESSIONS
 	NodeTypeBinaryExpession     = "BinaryExpession"
@@ -42,6 +43,13 @@ type VariableDeclaration struct {
 	constant   bool
 	identifier string
 	value      Stmter
+}
+
+type FunctionDeclaration struct {
+	*Stmt
+	parameters []string
+	name       string
+	body       []Stmter
 }
 
 type Expr struct {

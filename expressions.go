@@ -92,7 +92,6 @@ func (i *Interpreter) evalObjectExpr(node *ObjectLiteral, env *Environments) (Ru
 }
 
 func (i *Interpreter) evalCallExpr(expr *CallExpression, env *Environments) (RuntimeVal, error) {
-
 	var args []RuntimeVal
 
 	for _, arg := range expr.args {
@@ -108,10 +107,31 @@ func (i *Interpreter) evalCallExpr(expr *CallExpression, env *Environments) (Run
 		return nil, err
 	}
 
-	fn := f.(*NativeFnValue)
-	if fn.Type != ValueNativeFunction {
-		return nil, fmt.Errorf("cannot call value which is not a function")
+	if fn, ok := f.(*NativeFnValue); ok {
+		return fn.call(args, env), nil
 	}
 
-	return fn.call(args, env), nil
+	if fnc, ok := f.(*FnValue); ok {
+		scope, err := newEnvironments(fnc.declarationEnv)
+		if err != nil {
+			return nil, err
+		}
+
+		for i, varName := range fnc.paramaters {
+			// @TODO check the bouds here, verify the airity of the function
+			scope.declareVar(varName, args[i], false)
+		}
+
+		var result RuntimeVal = makeNull()
+		for _, statement := range fnc.body {
+			result, err = i.evaluate(statement, scope)
+			if err != nil {
+				return nil, err
+			}
+		}
+
+		return result, nil
+	}
+
+	return nil, fmt.Errorf("cannot call value which is not a function")
 }

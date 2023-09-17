@@ -8,6 +8,7 @@ const (
 	ValueBoolean
 	ValueObject
 	ValueNativeFunction
+	ValueFunction
 )
 
 type RuntimeVal interface {
@@ -36,6 +37,14 @@ type ObjectVal struct {
 type NativeFnValue struct {
 	Type ValueType
 	call FunctionCall
+}
+
+type FnValue struct {
+	Type           ValueType
+	name           string
+	paramaters     []string
+	declarationEnv *Environments
+	body           []Stmter
 }
 
 func makeNumber(n float64) *NumberVal {

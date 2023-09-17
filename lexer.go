@@ -19,11 +19,12 @@ const (
 	TokenTypeOpenBrace
 	TokenTypeCloseBrace
 	TokenTypeOpenBracket
-	TokenTypeCloeBracket
+	TokenTypeCloseBracket
 	TokenTypeBinaryOperator
 	TokenTypeLet
 	TokenTypeConst
 	TokenTypeSemicolon
+	TokenTypeFn
 	TokenTypeEOF
 )
 
@@ -44,6 +45,7 @@ func (t *Tokenizer) tokenize(sourceCode string) ([]Token, error) {
 	t.keywords = map[string]TokenType{
 		"let":   TokenTypeLet,
 		"const": TokenTypeConst,
+		"fn":    TokenTypeFn,
 	}
 
 	var tokens []Token
@@ -68,12 +70,11 @@ func (t *Tokenizer) tokenize(sourceCode string) ([]Token, error) {
 		case "}":
 			tokens = append(tokens, Token{Type: TokenTypeCloseBrace})
 			i++
-
 		case "[":
 			tokens = append(tokens, Token{Type: TokenTypeOpenBracket})
 			i++
 		case "]":
-			tokens = append(tokens, Token{Type: TokenTypeCloeBracket})
+			tokens = append(tokens, Token{Type: TokenTypeCloseBracket})
 			i++
 		case "+", "-", "/", "*", "%":
 			tokens = append(tokens, Token{Type: TokenTypeBinaryOperator, Value: src[i]})

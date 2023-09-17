@@ -1,0 +1,35 @@
+let z = 35;
+fn add (x, y) {
+    let result = x + y;
+    print(result)
+
+    result
+}
+
+fn sub () {
+    let x = 10;
+    let y = 20;
+    fn add (x, y) {
+        let result = x + y;
+        print(result)
+
+        result
+    }
+
+    let foo = 45;
+    add(x,foo)
+}
+
+const result = add(10, 4);
+
+print(result)
+print(result)
+print(result)
+
+print(add(5, 3))
+print(add(2, 7))
+print(add(5, 3))
+print(add(1, z))
+
+
+print(sub())

@@ -42,7 +42,7 @@ func testTokenizer() {
 
 func testing(env *Environments) {
 
-	s, _ := readFile("./expr.gl")
+	s, _ := readFile("./fn.gl")
 
 	p := newParser()
 	parsed, err := p.produceAST(s)
@@ -74,8 +74,6 @@ func propmt(env *Environments) {
 			fmt.Println(err)
 			continue
 		}
-
-		prettyPrint(parsed)
 
 		i := newInterpreter()
 		e, err := i.evaluate(parsed, env)

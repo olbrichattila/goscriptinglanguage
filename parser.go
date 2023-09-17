@@ -69,6 +69,8 @@ func (p *Parser) parseStmt() (Stmter, error) {
 	switch p.at().Type {
 	case TokenTypeLet, TokenTypeConst:
 		return p.parseVarDeclaration()
+	case TokenTypeFn:
+		return p.parseFunctionDeclaration()
 	default:
 		return p.parseExpr()
 	}
@@ -120,6 +122,56 @@ func (p *Parser) parseVarDeclaration() (Stmter, error) {
 	}
 
 	return declaration, nil
+}
+
+func (p *Parser) parseFunctionDeclaration() (Stmter, error) {
+	p.next()
+	token, err := p.expect(TokenTypeIdentifier, "Expected function name following fn keyword")
+	if err != nil {
+		return nil, err
+	}
+
+	name := token.Value
+	var params []string
+
+	args, err := p.parseArgs()
+	if err != nil {
+		return nil, err
+	}
+
+	for _, arg := range args {
+		a := *arg
+		if a.Kind() != NodeTypeIdentifier {
+			return nil, fmt.Errorf("Inside function declatation expected paramegters to be string")
+		}
+
+		params = append(params, a.(*Identifier).symbol)
+	}
+
+	p.expect(TokenTypeOpenBrace, "Expected function body declaration ")
+
+	var body []Stmter
+
+	for {
+		if p.at().Type == TokenTypeEOF || p.at().Type == TokenTypeCloseBrace {
+			break
+		}
+		s, err := p.parseStmt()
+		if err != nil {
+			return nil, err
+		}
+
+		body = append(body, s)
+	}
+
+	p.expect(TokenTypeCloseBrace, "Closing brace expected inside function declaration")
+
+	return &FunctionDeclaration{
+		Stmt:       &Stmt{kind: NodeTypeFunctionDeclaration},
+		parameters: params,
+		name:       name,
+		body:       body,
+	}, nil
 }
 
 func (p *Parser) parseExpr() (Stmter, error) {
@@ -234,7 +286,6 @@ func (p *Parser) parseAdditiveExpr() (Stmter, error) {
 }
 
 func (p *Parser) parseMultiplicativeExpr() (Stmter, error) {
-	// left, err := p.parsePrimaryExpr()
 	left, err := p.parseCallMemberExpr()
 	if err != nil {
 		return nil, err
@@ -244,7 +295,6 @@ func (p *Parser) parseMultiplicativeExpr() (Stmter, error) {
 		v := p.at().Value
 		if v == "/" || v == "*" || v == "%" {
 			operator := p.next().Value
-			// right, err := p.parsePrimaryExpr()
 			right, err := p.parseCallMemberExpr()
 			if err != nil {
 				return nil, err
@@ -336,7 +386,7 @@ func (p *Parser) parseMemberExpr() (Stmter, error) {
 				return nil, err
 			}
 
-			p.expect(TokenTypeCloeBracket, "Missing cosing bracket in computed value")
+			p.expect(TokenTypeCloseBracket, "Missing cosing bracket in computed value")
 		}
 
 		object = &MemberExpression{
@@ -351,7 +401,7 @@ func (p *Parser) parseMemberExpr() (Stmter, error) {
 }
 
 func (p *Parser) parseArgs() ([]*Stmter, error) {
-	p.expect(TokenTypeOpenParen, "Expected oper parantesis")
+	p.expect(TokenTypeOpenParen, "Expected open parantesis")
 	var args []*Stmter
 	var err error
 
@@ -365,11 +415,6 @@ func (p *Parser) parseArgs() ([]*Stmter, error) {
 	p.expect(TokenTypeColseParen, "Missing closing parenthesis inside arguement list")
 
 	return args, nil
-}
-
-func (p *Parser) parseArgsExpr() ([]*Stmter, error) {
-
-	return nil, nil
 }
 
 func (p *Parser) parseArgumentsLists() ([]*Stmter, error) {
@@ -387,12 +432,12 @@ func (p *Parser) parseArgumentsLists() ([]*Stmter, error) {
 		}
 
 		p.next()
-		arg, err = p.parseAssignmentExpr()
+		fArg, err := p.parseAssignmentExpr()
 		if err != nil {
 			return nil, err
 		}
 
-		args = append(args, &arg)
+		args = append(args, &fArg)
 	}
 
 	return args, nil
@@ -423,6 +468,6 @@ func (p *Parser) parsePrimaryExpr() (Stmter, error) {
 
 		return value, nil
 	default:
-		return nil, fmt.Errorf("Invalid token type %d", p.at().Type)
+		return nil, fmt.Errorf("Invalid token type %d %T", p.at().Type, p.at().Value)
 	}
 }
