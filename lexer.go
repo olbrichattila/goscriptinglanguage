@@ -26,6 +26,7 @@ type Token struct {
 }
 
 type Tokenizer struct {
+	keywords map[string]TokenType
 }
 
 func newTokenizer() *Tokenizer {
@@ -33,7 +34,7 @@ func newTokenizer() *Tokenizer {
 }
 
 func (t *Tokenizer) tokenize(sourceCode string) ([]Token, error) {
-	keywords := map[string]TokenType{
+	t.keywords = map[string]TokenType{
 		"let":   TokenTypeLet,
 		"const": TokenTypeConst,
 	}
@@ -64,46 +65,61 @@ func (t *Tokenizer) tokenize(sourceCode string) ([]Token, error) {
 			tokens = append(tokens, Token{Type: TokenTypeSemicolon})
 			i++
 		default:
-			if t.isInt(src[i]) {
-				num := ""
-				for {
-					if i == len(src) || !t.isInt(src[i]) {
-						break
-					}
-					num += src[i]
-					i++
-				}
-
-				tokens = append(tokens, Token{Type: TokenTypeNumber, Value: num})
-
-			} else if t.isAlpha(src[i]) {
-				alpha := ""
-				for {
-					if i == len(src) || !t.isAlpha(src[i]) {
-						break
-					}
-					alpha += src[i]
-					i++
-				}
-
-				if keywordTokenType, exist := keywords[alpha]; exist {
-					tokens = append(tokens, Token{Type: keywordTokenType, Value: alpha})
-				} else {
-					tokens = append(tokens, Token{Type: TokenTypeIdentifier, Value: alpha})
-				}
-
-			} else if t.isSkippable(src[i]) {
-				i++
-			} else {
-				return nil, fmt.Errorf("Uncrecoginized charecter found in source %s", src[i])
+			tk, index, err := t.tokenizeComplex(src, i)
+			if err != nil {
+				return nil, err
 			}
 
+			if tk != nil {
+				tokens = append(tokens, *tk)
+			}
+
+			i = index
 		}
 	}
 
 	tokens = append(tokens, Token{Type: TokenTypeEOF, Value: "EndOfFile"})
 
 	return tokens, nil
+}
+
+func (t *Tokenizer) tokenizeComplex(src []string, i int) (*Token, int, error) {
+	if t.isInt(src[i]) {
+		num := ""
+		for {
+			if i == len(src) || !t.isInt(src[i]) {
+				break
+			}
+			num += src[i]
+			i++
+		}
+
+		return &Token{Type: TokenTypeNumber, Value: num}, i, nil
+	}
+
+	if t.isAlpha(src[i]) {
+		alpha := ""
+		for {
+			if i == len(src) || !t.isAlpha(src[i]) {
+				break
+			}
+			alpha += src[i]
+			i++
+		}
+
+		if keywordTokenType, exist := t.keywords[alpha]; exist {
+			return &Token{Type: keywordTokenType, Value: alpha}, i, nil
+		}
+
+		return &Token{Type: TokenTypeIdentifier, Value: alpha}, i, nil
+	}
+
+	if t.isSkippable(src[i]) {
+		i++
+		return nil, i, nil
+	}
+
+	return nil, i, fmt.Errorf("Uncrecoginized charecter found in source %s", src[i])
 }
 
 func (t *Tokenizer) isSkippable(s string) bool {
