@@ -102,15 +102,15 @@ func executeScript(env *Environments) {
 		return
 	}
 
-	// i := newInterpreter()
-	// e, err := i.evaluate(parsed, env)
-	// if err != nil {
-	// 	fmt.Println(err)
-	// 	return
-	// }
+	i := newInterpreter()
+	e, err := i.evaluate(parsed, env)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
 
-	// fmt.Println(e)
-	prettyPrint(parsed)
+	fmt.Println(e)
+	// prettyPrint(parsed)
 }
 
 func readFromConsole() string {
