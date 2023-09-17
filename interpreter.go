@@ -13,7 +13,7 @@ func (i *Interpreter) evaluate(astNode Stmter, env *Environments) (RuntimeVal, e
 	kind := astNode.Kind()
 	switch kind {
 	case NodeTypeNumericLiteral:
-		return MK_NUMBER(astNode.(*NumericLiteral).value), nil
+		return makeNumber(astNode.(*NumericLiteral).value), nil
 	case NodeTypeBinaryExpession:
 		return i.evalBinaryExpression(astNode.(*BinaryExpession), env)
 	case NodeTypeProgram:

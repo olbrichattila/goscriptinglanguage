@@ -26,14 +26,14 @@ type BoolVal struct {
 	Value bool
 }
 
-func MK_NUMBER(n float64) *NumberVal {
+func makeNumber(n float64) *NumberVal {
 	return &NumberVal{Type: ValueTypeNumber, Value: n}
 }
 
-func MK_NULL() *NullVal {
+func makeNull() *NullVal {
 	return &NullVal{Type: ValueTypeNull, Value: "null"}
 }
 
-func MK_BOOL(v bool) *BoolVal {
+func makeBool(v bool) *BoolVal {
 	return &BoolVal{Type: ValueBoolean, Value: v}
 }

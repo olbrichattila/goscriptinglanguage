@@ -18,7 +18,7 @@ func (i *Interpreter) evalBinaryExpression(binop *BinaryExpession, env *Environm
 		return i.evalNumericBinaryExpr(*lhsVal, *rhsVal, binop.operator)
 	}
 
-	return MK_NULL(), nil
+	return makeNull(), nil
 }
 
 func (i *Interpreter) evalIdentifier(ident *Identifier, env *Environments) (RuntimeVal, error) {
@@ -51,7 +51,7 @@ func (i *Interpreter) evalNumericBinaryExpr(lhs, rhs NumberVal, operator string)
 		return nil, fmt.Errorf("Operator %s not implemented", operator)
 	}
 
-	return MK_NUMBER(result), nil
+	return makeNumber(result), nil
 }
 
 func (i *Interpreter) evalAssignment(node *AssignmentExpr, env *Environments) (RuntimeVal, error) {

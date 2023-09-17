@@ -7,7 +7,11 @@ import (
 )
 
 func main() {
-	env := declareDefaultEnv()
+	env, err := declareDefaultEnv()
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
 
 	mode := 1
 
@@ -80,13 +84,24 @@ func propmt(env *Environments) {
 	}
 }
 
-func declareDefaultEnv() *Environments {
+func declareDefaultEnv() (*Environments, error) {
 	env := newEnvironments(nil)
-	env.declareVar("null", MK_NULL(), true)
-	env.declareVar("true", MK_BOOL(true), true)
-	env.declareVar("false", MK_BOOL(false), true)
+	_, err := env.declareVar("null", makeNull(), true)
+	if err != nil {
+		return nil, err
+	}
 
-	return env
+	_, err = env.declareVar("true", makeBool(true), true)
+	if err != nil {
+		return nil, err
+	}
+
+	_, err = env.declareVar("false", makeBool(false), true)
+	if err != nil {
+		return nil, err
+	}
+
+	return env, nil
 }
 
 func readFromConsole() string {
