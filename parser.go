@@ -56,13 +56,13 @@ func (p *Parser) next() Token {
 	return token
 }
 
-func (p *Parser) expect(t TokenType, errMsg string) error {
+func (p *Parser) expect(t TokenType, errMsg string) (*Token, error) {
 	prev := p.next()
 	if prev.Type != t {
-		return fmt.Errorf(errMsg)
+		return nil, fmt.Errorf(errMsg)
 	}
 
-	return nil
+	return &prev, nil
 }
 
 func (p *Parser) parseStmt() (Stmter, error) {
@@ -78,7 +78,7 @@ func (p *Parser) parseVarDeclaration() (Stmter, error) {
 	tokenType := p.next().Type
 	token := p.at()
 	isConstant := tokenType == TokenTypeConst
-	err := p.expect(TokenTypeIdentifier, "Expected identifier name following let or const keywords")
+	_, err := p.expect(TokenTypeIdentifier, "Expected identifier name following let or const keywords")
 	if err != nil {
 		return nil, err
 	}
@@ -97,7 +97,7 @@ func (p *Parser) parseVarDeclaration() (Stmter, error) {
 
 	}
 
-	err = p.expect(TokenTypeEquals, "Expected equals token following identifier in var declaration")
+	_, err = p.expect(TokenTypeEquals, "Expected equals token following identifier in var declaration")
 	if err != nil {
 		return nil, err
 	}
@@ -114,7 +114,7 @@ func (p *Parser) parseVarDeclaration() (Stmter, error) {
 		constant:   isConstant,
 	}, nil
 
-	err = p.expect(TokenTypeSemicolon, "Variable declaration must end with semilolon")
+	_, err = p.expect(TokenTypeSemicolon, "Variable declaration must end with semilolon")
 	if err != nil {
 		return nil, err
 	}
@@ -127,7 +127,9 @@ func (p *Parser) parseExpr() (Stmter, error) {
 }
 
 func (p *Parser) parseAssignmentExpr() (Stmter, error) {
-	left, err := p.parseAdditiveExpr() // @todo swith this out with objects
+	// left, err := p.parseAdditiveExpr() // @todo swith this out with objects
+	left, err := p.parseObjectExpr()
+
 	if err != nil {
 		return nil, err
 	}
@@ -144,6 +146,64 @@ func (p *Parser) parseAssignmentExpr() (Stmter, error) {
 	}
 
 	return left, nil
+}
+
+func (p *Parser) parseObjectExpr() (Stmter, error) {
+
+	if p.at().Type != TokenTypeOpenBrace {
+		return p.parseAdditiveExpr()
+	}
+
+	p.next()
+
+	var properties []*Property
+
+	for {
+		if p.eof() || p.at().Type == tokenTypeCloseBrace {
+			break
+		}
+
+		t, err := p.expect(TokenTypeIdentifier, "Object literal key expected")
+		if err != nil {
+			return nil, err
+		}
+		key := t.Value
+
+		if p.at().Type == TokenTypeComma {
+			p.next()
+			properties = append(properties, &Property{Stmt: &Stmt{kind: NodeTypeProperty}, key: key})
+			continue
+		}
+
+		if p.at().Type == tokenTypeCloseBrace {
+			properties = append(properties, &Property{Stmt: &Stmt{kind: NodeTypeProperty}, key: key})
+			continue
+		}
+
+		_, err = p.expect(TokenTypeColon, "Missing colon followint  in object expression")
+		if err != nil {
+			return nil, err
+		}
+
+		value, err := p.parseExpr()
+		if err != nil {
+			return nil, err
+		}
+
+		properties = append(properties, &Property{Stmt: &Stmt{kind: NodeTypeProperty}, key: key, value: value})
+
+		if p.at().Type != tokenTypeCloseBrace {
+			p.expect(TokenTypeComma, "Expected comma or closing bracket following property")
+		}
+
+	}
+
+	_, err := p.expect(tokenTypeCloseBrace, "Objects literal missing closing brace.")
+	if err != nil {
+		return nil, err
+	}
+
+	return &ObjectLiteral{Stmt: &Stmt{kind: NodeTypeObject}, properties: properties}, nil
 }
 
 func (p *Parser) parseAdditiveExpr() (Stmter, error) {
@@ -220,7 +280,7 @@ func (p *Parser) parsePrimaryExpr() (Stmter, error) {
 		if err != nil {
 			return nil, err
 		}
-		err = p.expect(TokenTypeColseParen, "Unexpected token found inside parenthesised expression, expected closing parenthesis")
+		_, err = p.expect(TokenTypeColseParen, "Unexpected token found inside parenthesised expression, expected closing parenthesis")
 		if err != nil {
 			return nil, err
 		}

@@ -8,12 +8,21 @@ type Environments struct {
 	constants map[string]interface{}
 }
 
-func newEnvironments(parent *Environments) *Environments {
-	return &Environments{
+func newEnvironments(parent *Environments) (*Environments, error) {
+	e := &Environments{
 		parent:    parent,
 		variables: make(map[string]RuntimeVal),
 		constants: make(map[string]interface{}),
 	}
+
+	if parent == nil {
+		err := e.declareDefaultEnv()
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	return e, nil
 }
 
 func (e *Environments) declareVar(varName string, value RuntimeVal, constant bool) (RuntimeVal, error) {
@@ -66,4 +75,23 @@ func (e *Environments) lookupVar(varName string) (RuntimeVal, error) {
 	value := env.variables[varName]
 
 	return value, nil
+}
+
+func (e *Environments) declareDefaultEnv() error {
+	_, err := e.declareVar("null", makeNull(), true)
+	if err != nil {
+		return err
+	}
+
+	_, err = e.declareVar("true", makeBool(true), true)
+	if err != nil {
+		return err
+	}
+
+	_, err = e.declareVar("false", makeBool(false), true)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }

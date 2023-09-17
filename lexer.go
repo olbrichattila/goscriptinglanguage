@@ -11,8 +11,12 @@ const (
 	TokenTypeNumber TokenType = iota
 	TokenTypeIdentifier
 	TokenTypeEquals
+	TokenTypeComma
+	TokenTypeColon
 	TokenTypeOpenParen
 	TokenTypeColseParen
+	TokenTypeOpenBrace
+	tokenTypeCloseBrace
 	TokenTypeBinaryOperator
 	TokenTypeLet
 	TokenTypeConst
@@ -55,6 +59,12 @@ func (t *Tokenizer) tokenize(sourceCode string) ([]Token, error) {
 		case ")":
 			tokens = append(tokens, Token{Type: TokenTypeColseParen})
 			i++
+		case "{":
+			tokens = append(tokens, Token{Type: TokenTypeOpenBrace})
+			i++
+		case "}":
+			tokens = append(tokens, Token{Type: tokenTypeCloseBrace})
+			i++
 		case "+", "-", "/", "*", "%":
 			tokens = append(tokens, Token{Type: TokenTypeBinaryOperator, Value: src[i]})
 			i++
@@ -63,6 +73,12 @@ func (t *Tokenizer) tokenize(sourceCode string) ([]Token, error) {
 			i++
 		case ";":
 			tokens = append(tokens, Token{Type: TokenTypeSemicolon})
+			i++
+		case ":":
+			tokens = append(tokens, Token{Type: TokenTypeColon})
+			i++
+		case ",":
+			tokens = append(tokens, Token{Type: TokenTypeComma})
 			i++
 		default:
 			tk, index, err := t.tokenizeComplex(src, i)
@@ -123,7 +139,7 @@ func (t *Tokenizer) tokenizeComplex(src []string, i int) (*Token, int, error) {
 }
 
 func (t *Tokenizer) isSkippable(s string) bool {
-	return s == " " || s == "\n" || s == "\t"
+	return s == " " || s == "\n" || s == "\t" || s == "\r"
 }
 
 func (t *Tokenizer) isInt(s string) bool {

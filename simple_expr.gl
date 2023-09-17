@@ -1,0 +1,3 @@
+let x = 55;
+const foo = 10;
+x + foo / 2

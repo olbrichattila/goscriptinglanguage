@@ -7,20 +7,22 @@ import (
 )
 
 func main() {
-	env, err := declareDefaultEnv()
+	env, err := newEnvironments(nil)
 	if err != nil {
 		fmt.Println(err)
 		return
 	}
 
-	mode := 1
+	mode := 2
 
 	switch mode {
 	case 1:
 		propmt(env)
 	case 2:
-		testing(env)
+		executeScript(env)
 	case 3:
+		testing(env)
+	case 4:
 		testTokenizer()
 	default:
 		propmt(env)
@@ -84,24 +86,28 @@ func propmt(env *Environments) {
 	}
 }
 
-func declareDefaultEnv() (*Environments, error) {
-	env := newEnvironments(nil)
-	_, err := env.declareVar("null", makeNull(), true)
+func executeScript(env *Environments) {
+	s, err := readFromFile()
 	if err != nil {
-		return nil, err
+		fmt.Println(err)
+		return
 	}
 
-	_, err = env.declareVar("true", makeBool(true), true)
+	p := newParser()
+	parsed, err := p.produceAST(s)
 	if err != nil {
-		return nil, err
+		fmt.Println(err)
+		return
 	}
 
-	_, err = env.declareVar("false", makeBool(false), true)
+	i := newInterpreter()
+	e, err := i.evaluate(parsed, env)
 	if err != nil {
-		return nil, err
+		fmt.Println(err)
+		return
 	}
 
-	return env, nil
+	fmt.Println(e)
 }
 
 func readFromConsole() string {
@@ -113,4 +119,13 @@ func readFromConsole() string {
 	text, _ := reader.ReadString('\n')
 
 	return text
+}
+
+func readFromFile() (string, error) {
+	if len(os.Args) < 2 {
+		fmt.Println()
+		return "", fmt.Errorf("Please provide the file name to run.")
+	}
+
+	return readFile(os.Args[1])
 }

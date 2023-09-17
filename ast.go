@@ -8,10 +8,14 @@ const (
 	NodeTypeVariableDeclaration = "VariableDeclaration"
 
 	// EXPRESSIONS
-	NodeTypeNumericLiteral  = "NumericLiteral"
-	NodeTypeIdentifier      = "Identifier"
 	NodeTypeBinaryExpession = "BinaryExpession"
-	NodeTypeAssigmentExpr   = "AssignmentExpr"
+
+	// Literals
+	NodeTypeProperty       = "Property"
+	NodeTypeObject         = "ObjectLiteral"
+	NodeTypeNumericLiteral = "NumericLiteral"
+	NodeTypeIdentifier     = "Identifier"
+	NodeTypeAssigmentExpr  = "AssignmentExpr"
 )
 
 type Stmter interface {
@@ -42,6 +46,12 @@ type Expr struct {
 	Stmt
 }
 
+type AssignmentExpr struct {
+	*Stmt
+	assigne Stmter
+	value   Stmter
+}
+
 type BinaryExpession struct {
 	*Stmt
 	left     Stmter
@@ -59,8 +69,13 @@ type NumericLiteral struct {
 	value float64
 }
 
-type AssignmentExpr struct {
+type Property struct {
 	*Stmt
-	assigne Stmter
-	value   Stmter
+	key   string
+	value Stmter
+}
+
+type ObjectLiteral struct {
+	*Stmt
+	properties []*Property
 }
