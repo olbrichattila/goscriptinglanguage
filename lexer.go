@@ -12,11 +12,14 @@ const (
 	TokenTypeIdentifier
 	TokenTypeEquals
 	TokenTypeComma
+	TokenTypeDot
 	TokenTypeColon
 	TokenTypeOpenParen
 	TokenTypeColseParen
 	TokenTypeOpenBrace
-	tokenTypeCloseBrace
+	TokenTypeCloseBrace
+	TokenTypeOpenBracket
+	TokenTypeCloeBracket
 	TokenTypeBinaryOperator
 	TokenTypeLet
 	TokenTypeConst
@@ -63,7 +66,14 @@ func (t *Tokenizer) tokenize(sourceCode string) ([]Token, error) {
 			tokens = append(tokens, Token{Type: TokenTypeOpenBrace})
 			i++
 		case "}":
-			tokens = append(tokens, Token{Type: tokenTypeCloseBrace})
+			tokens = append(tokens, Token{Type: TokenTypeCloseBrace})
+			i++
+
+		case "[":
+			tokens = append(tokens, Token{Type: TokenTypeOpenBracket})
+			i++
+		case "]":
+			tokens = append(tokens, Token{Type: TokenTypeCloeBracket})
 			i++
 		case "+", "-", "/", "*", "%":
 			tokens = append(tokens, Token{Type: TokenTypeBinaryOperator, Value: src[i]})
@@ -79,6 +89,9 @@ func (t *Tokenizer) tokenize(sourceCode string) ([]Token, error) {
 			i++
 		case ",":
 			tokens = append(tokens, Token{Type: TokenTypeComma})
+			i++
+		case ".":
+			tokens = append(tokens, Token{Type: TokenTypeDot})
 			i++
 		default:
 			tk, index, err := t.tokenizeComplex(src, i)

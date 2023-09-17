@@ -1,4 +1,4 @@
-const foo = 15 - 3;
+let foo = 15 - 3;
 const obj = {
    x: 150,
    y: 130,
@@ -7,3 +7,7 @@ const obj = {
     bar: true,
    },
 };
+
+print(1,5)
+let f = obj.complex.bar;
+foo = obj.foo() + 5

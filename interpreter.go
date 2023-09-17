@@ -22,7 +22,7 @@ func (i *Interpreter) evaluate(astNode Stmter, env *Environments) (RuntimeVal, e
 		return i.evalIdentifier(astNode.(*Identifier), env)
 	case NodeTypeVariableDeclaration:
 		return i.evalVarDeclaration(astNode.(*VariableDeclaration), env)
-	case NodeTypeAssigmentExpr:
+	case NodeTypeAssigmentExpression:
 		return i.evalAssignment(astNode.(*AssignmentExpr), env)
 	case NodeTypeObjectLiteral:
 		return i.evalObjectExpr(astNode.(*ObjectLiteral), env)

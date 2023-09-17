@@ -102,14 +102,15 @@ func executeScript(env *Environments) {
 		return
 	}
 
-	i := newInterpreter()
-	e, err := i.evaluate(parsed, env)
-	if err != nil {
-		fmt.Println(err)
-		return
-	}
+	// i := newInterpreter()
+	// e, err := i.evaluate(parsed, env)
+	// if err != nil {
+	// 	fmt.Println(err)
+	// 	return
+	// }
 
-	fmt.Println(e)
+	// fmt.Println(e)
+	prettyPrint(parsed)
 }
 
 func readFromConsole() string {
@@ -130,4 +131,14 @@ func readFromFile() (string, error) {
 	}
 
 	return readFile(os.Args[1])
+}
+
+func prettyPrint(p *Program) {
+	for _, val := range p.body {
+		displayStruct(val)
+	}
+}
+
+func displayStruct(s Stmter) {
+	fmt.Printf("%s\n", s)
 }

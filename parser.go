@@ -127,7 +127,6 @@ func (p *Parser) parseExpr() (Stmter, error) {
 }
 
 func (p *Parser) parseAssignmentExpr() (Stmter, error) {
-	// left, err := p.parseAdditiveExpr() // @todo swith this out with objects
 	left, err := p.parseObjectExpr()
 
 	if err != nil {
@@ -141,7 +140,7 @@ func (p *Parser) parseAssignmentExpr() (Stmter, error) {
 			return nil, err
 		}
 
-		return &AssignmentExpr{Stmt: &Stmt{kind: NodeTypeAssigmentExpr}, value: value, assigne: left}, nil
+		return &AssignmentExpr{Stmt: &Stmt{kind: NodeTypeAssigmentExpression}, value: value, assigne: left}, nil
 
 	}
 
@@ -159,7 +158,7 @@ func (p *Parser) parseObjectExpr() (Stmter, error) {
 	var properties []*Property
 
 	for {
-		if p.eof() || p.at().Type == tokenTypeCloseBrace {
+		if p.eof() || p.at().Type == TokenTypeCloseBrace {
 			break
 		}
 
@@ -175,7 +174,7 @@ func (p *Parser) parseObjectExpr() (Stmter, error) {
 			continue
 		}
 
-		if p.at().Type == tokenTypeCloseBrace {
+		if p.at().Type == TokenTypeCloseBrace {
 			properties = append(properties, &Property{Stmt: &Stmt{kind: NodeTypeProperty}, key: key})
 			continue
 		}
@@ -192,13 +191,13 @@ func (p *Parser) parseObjectExpr() (Stmter, error) {
 
 		properties = append(properties, &Property{Stmt: &Stmt{kind: NodeTypeProperty}, key: key, value: value})
 
-		if p.at().Type != tokenTypeCloseBrace {
+		if p.at().Type != TokenTypeCloseBrace {
 			p.expect(TokenTypeComma, "Expected comma or closing bracket following property")
 		}
 
 	}
 
-	_, err := p.expect(tokenTypeCloseBrace, "Objects literal missing closing brace.")
+	_, err := p.expect(TokenTypeCloseBrace, "Objects literal missing closing brace.")
 	if err != nil {
 		return nil, err
 	}
@@ -235,7 +234,8 @@ func (p *Parser) parseAdditiveExpr() (Stmter, error) {
 }
 
 func (p *Parser) parseMultiplicativeExpr() (Stmter, error) {
-	left, err := p.parsePrimaryExpr()
+	// left, err := p.parsePrimaryExpr()
+	left, err := p.parseCallMemberExpr()
 	if err != nil {
 		return nil, err
 	}
@@ -244,7 +244,8 @@ func (p *Parser) parseMultiplicativeExpr() (Stmter, error) {
 		v := p.at().Value
 		if v == "/" || v == "*" || v == "%" {
 			operator := p.next().Value
-			right, err := p.parsePrimaryExpr()
+			// right, err := p.parsePrimaryExpr()
+			right, err := p.parseCallMemberExpr()
 			if err != nil {
 				return nil, err
 			}
@@ -260,6 +261,141 @@ func (p *Parser) parseMultiplicativeExpr() (Stmter, error) {
 	}
 
 	return left, nil
+}
+
+func (p *Parser) parseCallMemberExpr() (Stmter, error) {
+	member, err := p.parseMemberExpr()
+	if err != nil {
+		return nil, err
+	}
+
+	if p.at().Type == TokenTypeOpenParen {
+		return p.parseCallExpr(member)
+	}
+
+	return member, nil
+}
+
+func (p *Parser) parseCallExpr(caller Stmter) (Stmter, error) {
+
+	args, err := p.parseArgs()
+	if err != nil {
+		return nil, err
+	}
+
+	callExpr := &CallExpression{
+		Stmt:   &Stmt{kind: NodeTypeCallExpression},
+		caller: caller,
+		args:   args,
+	}
+
+	if p.at().Type == TokenTypeOpenBrace {
+
+		e, err := p.parseCallExpr(callExpr)
+		if err != nil {
+			return nil, err
+
+		}
+		callExpr = e.(*CallExpression)
+	}
+
+	return callExpr, nil
+}
+
+func (p *Parser) parseMemberExpr() (Stmter, error) {
+	object, err := p.parsePrimaryExpr()
+	if err != nil {
+		return nil, err
+	}
+
+	for {
+		if p.at().Type != TokenTypeDot && p.at().Type != TokenTypeOpenBracket {
+			break
+		}
+
+		operator := p.next()
+
+		var property Stmter
+		var computed bool
+
+		if operator.Type == TokenTypeDot {
+			computed = false
+			property, err = p.parsePrimaryExpr()
+			if err != nil {
+				return nil, err
+			}
+
+			if property.Kind() != NodeTypeIdentifier {
+				return nil, fmt.Errorf("Cannot use operatior without right hand side being an identifier")
+			}
+		} else {
+			computed = true
+
+			property, err = p.parseExpr()
+			if err != nil {
+				return nil, err
+			}
+
+			p.expect(TokenTypeCloeBracket, "Missing cosing bracket in computed value")
+		}
+
+		object = &MemberExpression{
+			Stmt:     &Stmt{kind: NodeTypeMemberExpression},
+			object:   object,
+			propert:  property,
+			computed: computed,
+		}
+	}
+
+	return object, nil
+}
+
+func (p *Parser) parseArgs() ([]*Stmter, error) {
+	p.expect(TokenTypeOpenParen, "Expected oper parantesis")
+	var args []*Stmter
+	var err error
+
+	if p.at().Type != TokenTypeColseParen {
+		args, err = p.parseArgumentsLists()
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	p.expect(TokenTypeColseParen, "Missing closing parenthesis inside arguement list")
+
+	return args, nil
+}
+
+func (p *Parser) parseArgsExpr() ([]*Stmter, error) {
+
+	return nil, nil
+}
+
+func (p *Parser) parseArgumentsLists() ([]*Stmter, error) {
+	var args []*Stmter
+	arg, err := p.parseAssignmentExpr()
+	if err != nil {
+		return nil, err
+	}
+
+	args = append(args, &arg)
+
+	for {
+		if p.at().Type != TokenTypeComma {
+			break
+		}
+
+		p.next()
+		arg, err = p.parseAssignmentExpr()
+		if err != nil {
+			return nil, err
+		}
+
+		args = append(args, &arg)
+	}
+
+	return args, nil
 }
 
 func (p *Parser) parsePrimaryExpr() (Stmter, error) {

@@ -8,14 +8,16 @@ const (
 	NodeTypeVariableDeclaration = "VariableDeclaration"
 
 	// EXPRESSIONS
-	NodeTypeBinaryExpession = "BinaryExpession"
+	NodeTypeBinaryExpession     = "BinaryExpession"
+	NodeTypeAssigmentExpression = "AssignmentExpr"
+	NodeTypeMemberExpression    = "MemberExpression"
+	NodeTypeCallExpression      = "CallExpression"
 
 	// Literals
 	NodeTypeProperty       = "Property"
 	NodeTypeObjectLiteral  = "ObjectLiteral"
 	NodeTypeNumericLiteral = "NumericLiteral"
 	NodeTypeIdentifier     = "Identifier"
-	NodeTypeAssigmentExpr  = "AssignmentExpr"
 )
 
 type Stmter interface {
@@ -78,4 +80,17 @@ type Property struct {
 type ObjectLiteral struct {
 	*Stmt
 	properties []*Property
+}
+
+type CallExpression struct {
+	*Stmt
+	args   []*Stmter
+	caller Stmter
+}
+
+type MemberExpression struct {
+	*Stmt
+	object   Stmter
+	propert  Stmter
+	computed bool
 }
