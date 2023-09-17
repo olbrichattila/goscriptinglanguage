@@ -62,13 +62,77 @@ x = x + 1
 
 ```
 
+### Definion of complex objects:
+
+Exampe:
+```
+let foo = 15 - 3;
+const obj = {
+   x: 150,
+   y: 130,
+   foo,
+   complex: {
+    bar: true,
+   },
+};
+
+print(1,5)
+let f = obj.complex.bar;
+foo = obj.foo() + 5
+
+```
+
+### internal Functions
+```
+print(1, 5)
+time()
+```
+
+### User defined functions Functions, closures with variable scopes
+Example:
+```
+let z = 35;
+fn add (x, y) {
+    let result = x + y;
+    print(result)
+
+    result
+}
+
+fn sub () {
+    let x = 10;
+    let y = 20;
+    fn add (x, y) {
+        let result = x + y;
+        print(result)
+
+        result
+    }
+
+    let foo = 45;
+    add(x,foo)
+}
+
+const result = add(10, 4);
+
+print(result)
+print(result)
+print(result)
+
+print(add(5, 3))
+print(add(2, 7))
+print(add(5, 3))
+print(add(1, z))
+
+
+print(sub())
+```
+
 ## What comes.
 - loops
 - conditions
-- functions
-- closures
 - classes
-- structures
+
 and more..
 
 
