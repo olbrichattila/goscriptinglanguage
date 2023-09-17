@@ -41,7 +41,9 @@ func testTokenizer() {
 }
 
 func testing(env *Environments) {
-	s := "const x = 10;x = 5"
+
+	s, _ := readFile("./expr.gl")
+
 	p := newParser()
 	parsed, err := p.produceAST(s)
 	if err != nil {

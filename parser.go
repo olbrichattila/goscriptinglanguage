@@ -203,7 +203,7 @@ func (p *Parser) parseObjectExpr() (Stmter, error) {
 		return nil, err
 	}
 
-	return &ObjectLiteral{Stmt: &Stmt{kind: NodeTypeObject}, properties: properties}, nil
+	return &ObjectLiteral{Stmt: &Stmt{kind: NodeTypeObjectLiteral}, properties: properties}, nil
 }
 
 func (p *Parser) parseAdditiveExpr() (Stmter, error) {

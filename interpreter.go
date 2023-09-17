@@ -24,6 +24,8 @@ func (i *Interpreter) evaluate(astNode Stmter, env *Environments) (RuntimeVal, e
 		return i.evalVarDeclaration(astNode.(*VariableDeclaration), env)
 	case NodeTypeAssigmentExpr:
 		return i.evalAssignment(astNode.(*AssignmentExpr), env)
+	case NodeTypeObjectLiteral:
+		return i.evalObjectExpr(astNode.(*ObjectLiteral), env)
 	default:
 		return nil, fmt.Errorf("This AST node has not yet been setup for interpretation %s", kind)
 	}

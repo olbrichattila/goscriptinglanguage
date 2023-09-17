@@ -12,7 +12,7 @@ const (
 
 	// Literals
 	NodeTypeProperty       = "Property"
-	NodeTypeObject         = "ObjectLiteral"
+	NodeTypeObjectLiteral  = "ObjectLiteral"
 	NodeTypeNumericLiteral = "NumericLiteral"
 	NodeTypeIdentifier     = "Identifier"
 	NodeTypeAssigmentExpr  = "AssignmentExpr"

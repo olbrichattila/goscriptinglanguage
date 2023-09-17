@@ -66,3 +66,27 @@ func (i *Interpreter) evalAssignment(node *AssignmentExpr, env *Environments) (R
 	}
 	return env.assignVar(varname, evaulated)
 }
+
+func (i *Interpreter) evalObjectExpr(node *ObjectLiteral, env *Environments) (RuntimeVal, error) {
+
+	object := &ObjectVal{Type: ValueObject, properties: make(map[string]RuntimeVal)}
+
+	for _, property := range node.properties {
+		if property.value == nil {
+			runtimeVal, err := env.lookupVar(property.key)
+			if err != nil {
+				return nil, err
+			}
+			object.properties[property.key] = runtimeVal
+		} else {
+
+			runtimeVal, err := i.evaluate(property.value, env)
+			if err != nil {
+				return nil, err
+			}
+			object.properties[property.key] = runtimeVal
+		}
+	}
+
+	return object, nil
+}

@@ -6,6 +6,7 @@ const (
 	ValueTypeNull ValueType = iota
 	ValueTypeNumber
 	ValueBoolean
+	ValueObject
 )
 
 type RuntimeVal interface {
@@ -24,6 +25,11 @@ type NumberVal struct {
 type BoolVal struct {
 	Type  ValueType
 	Value bool
+}
+
+type ObjectVal struct {
+	Type       ValueType
+	properties map[string]RuntimeVal
 }
 
 func makeNumber(n float64) *NumberVal {
