@@ -67,7 +67,6 @@ func propmt(env *Environments) {
 		if s == "\n" {
 			break
 		}
-		// s := "let x = 10;"
 
 		p := newParser()
 		parsed, err := p.produceAST(s)
@@ -75,6 +74,8 @@ func propmt(env *Environments) {
 			fmt.Println(err)
 			continue
 		}
+
+		prettyPrint(parsed)
 
 		i := newInterpreter()
 		e, err := i.evaluate(parsed, env)

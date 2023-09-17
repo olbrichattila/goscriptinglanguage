@@ -90,3 +90,28 @@ func (i *Interpreter) evalObjectExpr(node *ObjectLiteral, env *Environments) (Ru
 
 	return object, nil
 }
+
+func (i *Interpreter) evalCallExpr(expr *CallExpression, env *Environments) (RuntimeVal, error) {
+
+	var args []RuntimeVal
+
+	for _, arg := range expr.args {
+		ev, err := i.evaluate(*arg, env)
+		if err != nil {
+			return nil, err
+		}
+		args = append(args, ev)
+	}
+
+	f, err := i.evaluate(expr.caller, env)
+	if err != nil {
+		return nil, err
+	}
+
+	fn := f.(*NativeFnValue)
+	if fn.Type != ValueNativeFunction {
+		return nil, fmt.Errorf("cannot call value which is not a function")
+	}
+
+	return fn.call(args, env), nil
+}

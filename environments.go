@@ -93,5 +93,16 @@ func (e *Environments) declareDefaultEnv() error {
 		return err
 	}
 
+	// Define native function
+	_, err = e.declareVar("print", makeNativeFn(ntPrint), true)
+	if err != nil {
+		return err
+	}
+
+	_, err = e.declareVar("time", makeNativeFn(ntTime), true)
+	if err != nil {
+		return err
+	}
+
 	return nil
 }
