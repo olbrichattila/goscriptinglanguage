@@ -148,7 +148,10 @@ func (p *Parser) parseFunctionDeclaration() (Stmter, error) {
 		params = append(params, a.(*Identifier).symbol)
 	}
 
-	p.expect(TokenTypeOpenBrace, "Expected function body declaration ")
+	_, err = p.expect(TokenTypeOpenBrace, "Expected function body declaration ")
+	if err != nil {
+		return nil, err
+	}
 
 	var body []Stmter
 
@@ -164,7 +167,10 @@ func (p *Parser) parseFunctionDeclaration() (Stmter, error) {
 		body = append(body, s)
 	}
 
-	p.expect(TokenTypeCloseBrace, "Closing brace expected inside function declaration")
+	_, err = p.expect(TokenTypeCloseBrace, "Closing brace expected inside function declaration")
+	if err != nil {
+		return nil, err
+	}
 
 	return &FunctionDeclaration{
 		Stmt:       &Stmt{kind: NodeTypeFunctionDeclaration},
@@ -244,7 +250,10 @@ func (p *Parser) parseObjectExpr() (Stmter, error) {
 		properties = append(properties, &Property{Stmt: &Stmt{kind: NodeTypeProperty}, key: key, value: value})
 
 		if p.at().Type != TokenTypeCloseBrace {
-			p.expect(TokenTypeComma, "Expected comma or closing bracket following property")
+			_, err := p.expect(TokenTypeComma, "Expected comma or closing bracket following property")
+			if err != nil {
+				return nil, err
+			}
 		}
 
 	}
@@ -386,7 +395,10 @@ func (p *Parser) parseMemberExpr() (Stmter, error) {
 				return nil, err
 			}
 
-			p.expect(TokenTypeCloseBracket, "Missing cosing bracket in computed value")
+			_, err := p.expect(TokenTypeCloseBracket, "Missing cosing bracket in computed value")
+			if err != nil {
+				return nil, err
+			}
 		}
 
 		object = &MemberExpression{
@@ -401,9 +413,12 @@ func (p *Parser) parseMemberExpr() (Stmter, error) {
 }
 
 func (p *Parser) parseArgs() ([]*Stmter, error) {
-	p.expect(TokenTypeOpenParen, "Expected open parantesis")
-	var args []*Stmter
 	var err error
+	_, err = p.expect(TokenTypeOpenParen, "Expected open parantesis")
+	if err != nil {
+		return nil, err
+	}
+	var args []*Stmter
 
 	if p.at().Type != TokenTypeColseParen {
 		args, err = p.parseArgumentsLists()
@@ -412,7 +427,10 @@ func (p *Parser) parseArgs() ([]*Stmter, error) {
 		}
 	}
 
-	p.expect(TokenTypeColseParen, "Missing closing parenthesis inside arguement list")
+	_, err = p.expect(TokenTypeColseParen, "Missing closing parenthesis inside arguement list")
+	if err != nil {
+		return nil, err
+	}
 
 	return args, nil
 }

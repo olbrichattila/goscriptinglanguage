@@ -119,7 +119,10 @@ func (i *Interpreter) evalCallExpr(expr *CallExpression, env *Environments) (Run
 
 		for i, varName := range fnc.paramaters {
 			// @TODO check the bouds here, verify the airity of the function
-			scope.declareVar(varName, args[i], false)
+			_, err := scope.declareVar(varName, args[i], false)
+			if err != nil {
+				return nil, err
+			}
 		}
 
 		var result RuntimeVal = makeNull()
