@@ -28,6 +28,25 @@ func (i *Interpreter) evalVarDeclaration(declaration *VariableDeclaration, env *
 	}
 }
 
+func (i *Interpreter) evalConditionDeclaration(cnd *ConditionDeclaration, env *Environments) (RuntimeVal, error) {
+	lhs, err := i.evaluate(cnd.left, env)
+	if err != nil {
+		return nil, err
+	}
+	rhs, err := i.evaluate(cnd.right, env)
+	if err != nil {
+		return nil, err
+	}
+
+	lhsVal, okLhs := lhs.(*NumberVal)
+	rhsVal, okRhs := rhs.(*NumberVal)
+	if okLhs && okRhs {
+		return i.evalNumericConditionExpr(*lhsVal, *rhsVal, cnd.operator)
+	}
+
+	return makeNull(), nil
+}
+
 func (i *Interpreter) evalFunctionDeclaration(declaration *FunctionDeclaration, env *Environments) (RuntimeVal, error) {
 	fn := &FnValue{
 		Type:           ValueFunction,
