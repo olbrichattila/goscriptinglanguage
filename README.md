@@ -201,6 +201,14 @@ if (z == 25) {
     print(20)
     print(25)
 }
+
+if (5 != 4) {
+    print(5)
+}
+
+if (5 != 5) {
+    print(5)
+}
 ```
 
 ## What comes.
