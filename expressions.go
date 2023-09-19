@@ -150,6 +150,8 @@ func (i *Interpreter) evalNumericConditionExpr(lhs, rhs NumberVal, operator stri
 		result = lhs.Value < rhs.Value
 	case "<=":
 		result = lhs.Value <= rhs.Value
+	case "!=":
+		result = lhs.Value != rhs.Value
 	default:
 		return nil, fmt.Errorf("Conditional Operator %s not implemented", operator)
 	}

@@ -25,6 +25,8 @@ const (
 	TokenTypeSmallerEqual
 	TokenTypeGreaterEqual
 	TokenTypeDoubeEqual
+	TokenTypeNotEqual
+	TokenTypeNot
 	TokenTypeBinaryOperator
 	TokenTypeLet
 	TokenTypeConst
@@ -111,8 +113,20 @@ func (t *Tokenizer) tokenize(sourceCode string) ([]Token, error) {
 			if i < srcLen-1 && src[i+1] == "=" {
 				tokens = append(tokens, Token{Type: TokenTypeSmallerEqual, Value: "<="})
 				i++
+			} else if i < srcLen-1 && src[i+1] == ">" {
+				tokens = append(tokens, Token{Type: TokenTypeNotEqual, Value: "!="})
+				i++
 			} else {
 				tokens = append(tokens, Token{Type: TokenTypeSmaller, Value: "<"})
+			}
+			i++
+		case "!":
+			if i < srcLen-1 && src[i+1] == "=" {
+				tokens = append(tokens, Token{Type: TokenTypeNotEqual, Value: "!="})
+				i++
+			} else {
+				// This is not yet pharsed
+				tokens = append(tokens, Token{Type: TokenTypeNot, Value: "!"})
 			}
 			i++
 		case ">":

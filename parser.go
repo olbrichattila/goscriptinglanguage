@@ -240,7 +240,7 @@ func (p *Parser) parseConditionalExpr() (Stmter, error) {
 		return nil, err
 	}
 
-	if p.at().Type == TokenTypeSmaller || p.at().Type == TokenTypeSmallerEqual || p.at().Type == TokenTypeGreater || p.at().Type == TokenTypeGreaterEqual || p.at().Type == TokenTypeDoubeEqual {
+	if p.at().Type == TokenTypeSmaller || p.at().Type == TokenTypeSmallerEqual || p.at().Type == TokenTypeGreater || p.at().Type == TokenTypeGreaterEqual || p.at().Type == TokenTypeDoubeEqual || p.at().Type == TokenTypeNotEqual {
 		operator := p.next().Value
 		right, err := p.parseAssignmentExpr()
 		if err != nil {
@@ -253,7 +253,6 @@ func (p *Parser) parseConditionalExpr() (Stmter, error) {
 			right:    right,
 			operator: operator,
 		}, nil
-
 	}
 
 	return left, nil
