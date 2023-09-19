@@ -154,8 +154,57 @@ x = (foo > 0)
 print(x)
 ```
 
+## If statement 
+```
+if (5 == 5) {
+    print(true)
+}
+
+if (5 + 5 > 7) {
+    print(true)
+}
+
+if (5 + 5 < 7) {
+    print(false)
+}
+
+const foo = 50;
+
+if (foo == 50) {
+    print(true, 50)
+}
+
+if (foo > 10) {
+    print(true, 10)
+}
+
+if (foo >= 10) {
+    print(true, 10)
+}
+
+if (foo < 10) {
+    print(false, 10)
+}
+
+if (foo <= 10) {
+    print(false, 10)
+}
+
+let z = 20;
+
+if (z == 20) {
+    print(20)
+}
+
+z = 25
+if (z == 25) {
+    print(20)
+    print(25)
+}
+```
+
 ## What comes.
-- if, if else
+- else, if else
 - loops
 - classes
 

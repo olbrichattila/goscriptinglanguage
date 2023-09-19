@@ -31,7 +31,10 @@ func (i *Interpreter) evaluate(astNode Stmter, env *Environments) (RuntimeVal, e
 	case NodeTypeFunctionDeclaration:
 		return i.evalFunctionDeclaration(astNode.(*FunctionDeclaration), env)
 	case NodeTypeConditionExpression:
-		return i.evalConditionExpr(astNode.(*ConditionExpression), env)
+		return i.evalConditionDeclaration(astNode.(*ConditionDeclaration), env)
+	case NodeTypeIfExpression:
+		return i.evalIfExpr(astNode.(*IfExpression), env)
+
 	default:
 		return nil, fmt.Errorf("This AST node has not yet been setup for interpretation %s", kind)
 	}

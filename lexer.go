@@ -15,7 +15,7 @@ const (
 	TokenTypeDot
 	TokenTypeColon
 	TokenTypeOpenParen
-	TokenTypeColseParen
+	TokenTypeCloseParen
 	TokenTypeOpenBrace
 	TokenTypeCloseBrace
 	TokenTypeOpenBracket
@@ -30,6 +30,7 @@ const (
 	TokenTypeConst
 	TokenTypeSemicolon
 	TokenTypeFn
+	TokenIf
 	TokenTypeEOF
 )
 
@@ -51,6 +52,7 @@ func (t *Tokenizer) tokenize(sourceCode string) ([]Token, error) {
 		"let":   TokenTypeLet,
 		"const": TokenTypeConst,
 		"fn":    TokenTypeFn,
+		"if":    TokenIf,
 	}
 
 	var tokens []Token
@@ -68,7 +70,7 @@ func (t *Tokenizer) tokenize(sourceCode string) ([]Token, error) {
 			tokens = append(tokens, Token{Type: TokenTypeOpenParen})
 			i++
 		case ")":
-			tokens = append(tokens, Token{Type: TokenTypeColseParen})
+			tokens = append(tokens, Token{Type: TokenTypeCloseParen})
 			i++
 		case "{":
 			tokens = append(tokens, Token{Type: TokenTypeOpenBrace})

@@ -71,6 +71,8 @@ func (p *Parser) parseStmt() (Stmter, error) {
 		return p.parseVarDeclaration()
 	case TokenTypeFn:
 		return p.parseFunctionDeclaration()
+	case TokenIf:
+		return p.parseIfExpression()
 	default:
 		return p.parseExpr()
 	}
@@ -180,12 +182,59 @@ func (p *Parser) parseFunctionDeclaration() (Stmter, error) {
 	}, nil
 }
 
-func (p *Parser) parseExpr() (Stmter, error) {
-	return p.parseConitionmentExpr()
+func (p *Parser) parseIfExpression() (Stmter, error) {
+	p.next()
+	_, err := p.expect(TokenTypeOpenParen, "Open parenthesis expected after if statement")
+	if err != nil {
+		return nil, err
+	}
+
+	cond, err := p.parseConditionalExpr()
+	if err != nil {
+		return nil, err
+	}
+
+	_, err = p.expect(TokenTypeCloseParen, "Close parenthesis expected after if statement conditions")
+	if err != nil {
+		return nil, err
+	}
+
+	_, err = p.expect(TokenTypeOpenBrace, "Expected open brace after if condition")
+	if err != nil {
+		return nil, err
+	}
+
+	var body []Stmter
+
+	for {
+		if p.at().Type == TokenTypeEOF || p.at().Type == TokenTypeCloseBrace {
+			break
+		}
+		s, err := p.parseStmt()
+		if err != nil {
+			return nil, err
+		}
+
+		body = append(body, s)
+	}
+
+	_, err = p.expect(TokenTypeCloseBrace, "Closing brace expected inside function declaration")
+	if err != nil {
+		return nil, err
+	}
+
+	return &IfExpression{
+		Stmt:      &Stmt{kind: NodeTypeIfExpression},
+		condition: cond,
+		body:      body,
+	}, nil
 }
 
-func (p *Parser) parseConitionmentExpr() (Stmter, error) {
-	// @todo test condition expression
+func (p *Parser) parseExpr() (Stmter, error) {
+	return p.parseConditionalExpr()
+}
+
+func (p *Parser) parseConditionalExpr() (Stmter, error) {
 	left, err := p.parseAssignmentExpr()
 	if err != nil {
 		return nil, err
@@ -198,7 +247,7 @@ func (p *Parser) parseConitionmentExpr() (Stmter, error) {
 			return nil, err
 		}
 
-		return &ConditionExpression{
+		return &ConditionDeclaration{
 			Stmt:     &Stmt{kind: NodeTypeConditionExpression},
 			left:     left,
 			right:    right,
@@ -445,14 +494,14 @@ func (p *Parser) parseArgs() ([]*Stmter, error) {
 	}
 	var args []*Stmter
 
-	if p.at().Type != TokenTypeColseParen {
+	if p.at().Type != TokenTypeCloseParen {
 		args, err = p.parseArgumentsLists()
 		if err != nil {
 			return nil, err
 		}
 	}
 
-	_, err = p.expect(TokenTypeColseParen, "Missing closing parenthesis inside arguement list")
+	_, err = p.expect(TokenTypeCloseParen, "Missing closing parenthesis inside arguement list")
 	if err != nil {
 		return nil, err
 	}
@@ -504,7 +553,7 @@ func (p *Parser) parsePrimaryExpr() (Stmter, error) {
 		if err != nil {
 			return nil, err
 		}
-		_, err = p.expect(TokenTypeColseParen, "Unexpected token found inside parenthesised expression, expected closing parenthesis")
+		_, err = p.expect(TokenTypeCloseParen, "Unexpected token found inside parenthesised expression, expected closing parenthesis")
 		if err != nil {
 			return nil, err
 		}

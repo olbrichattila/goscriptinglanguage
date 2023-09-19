@@ -7,13 +7,14 @@ const (
 	NodeTypeProgram             = "Program"
 	NodeTypeVariableDeclaration = "VariableDeclaration"
 	NodeTypeFunctionDeclaration = "FunctionDeclaration"
+	NodeTypeIfExpression        = "IfExpressions"
 
 	// EXPRESSIONS
 	NodeTypeBinaryExpession     = "BinaryExpession"
 	NodeTypeAssigmentExpression = "AssignmentExpr"
 	NodeTypeMemberExpression    = "MemberExpression"
 	NodeTypeCallExpression      = "CallExpression"
-	NodeTypeConditionExpression = "ConditionExpression"
+	NodeTypeConditionExpression = "ConditionDeclaration"
 
 	// Literals
 	NodeTypeProperty       = "Property"
@@ -51,6 +52,12 @@ type FunctionDeclaration struct {
 	parameters []string
 	name       string
 	body       []Stmter
+}
+
+type IfExpression struct {
+	*Stmt
+	condition Stmter
+	body      []Stmter
 }
 
 type Expr struct {
@@ -104,7 +111,7 @@ type MemberExpression struct {
 	computed bool
 }
 
-type ConditionExpression struct {
+type ConditionDeclaration struct {
 	*Stmt
 	left     Stmter
 	right    Stmter

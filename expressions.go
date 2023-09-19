@@ -67,7 +67,6 @@ func (i *Interpreter) evalAssignment(node *AssignmentExpr, env *Environments) (R
 }
 
 func (i *Interpreter) evalObjectExpr(node *ObjectLiteral, env *Environments) (RuntimeVal, error) {
-
 	object := &ObjectVal{Type: ValueObject, properties: make(map[string]RuntimeVal)}
 
 	for _, property := range node.properties {
@@ -138,7 +137,7 @@ func (i *Interpreter) evalCallExpr(expr *CallExpression, env *Environments) (Run
 	return nil, fmt.Errorf("cannot call value which is not a function")
 }
 
-func (i *Interpreter) evalConditionExpr(cnd *ConditionExpression, env *Environments) (RuntimeVal, error) {
+func (i *Interpreter) evalConditionDeclaration(cnd *ConditionDeclaration, env *Environments) (RuntimeVal, error) {
 	lhs, err := i.evaluate(cnd.left, env)
 	if err != nil {
 		return nil, err
@@ -175,4 +174,23 @@ func (i *Interpreter) evalNumericConditionExpr(lhs, rhs NumberVal, operator stri
 	}
 
 	return makeBool(result), nil
+}
+
+func (i *Interpreter) evalIfExpr(ifE *IfExpression, env *Environments) (RuntimeVal, error) {
+	cond, err := i.evaluate(ifE.condition, env)
+	if err != nil {
+		return nil, err
+	}
+
+	var result RuntimeVal = makeNull()
+	if cond.(*BoolVal).Value == true {
+		for _, statement := range ifE.body {
+			result, err = i.evaluate(statement, env)
+			if err != nil {
+				return nil, err
+			}
+		}
+	}
+
+	return result, nil
 }
