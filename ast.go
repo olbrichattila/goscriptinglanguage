@@ -13,6 +13,7 @@ const (
 	NodeTypeAssigmentExpression = "AssignmentExpr"
 	NodeTypeMemberExpression    = "MemberExpression"
 	NodeTypeCallExpression      = "CallExpression"
+	NodeTypeConditionExpression = "ConditionExpression"
 
 	// Literals
 	NodeTypeProperty       = "Property"
@@ -101,4 +102,11 @@ type MemberExpression struct {
 	object   Stmter
 	propert  Stmter
 	computed bool
+}
+
+type ConditionExpression struct {
+	*Stmt
+	left     Stmter
+	right    Stmter
+	operator string
 }

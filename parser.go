@@ -181,12 +181,37 @@ func (p *Parser) parseFunctionDeclaration() (Stmter, error) {
 }
 
 func (p *Parser) parseExpr() (Stmter, error) {
-	return p.parseAssignmentExpr()
+	return p.parseConitionmentExpr()
+}
+
+func (p *Parser) parseConitionmentExpr() (Stmter, error) {
+	// @todo test condition expression
+	left, err := p.parseAssignmentExpr()
+	if err != nil {
+		return nil, err
+	}
+
+	if p.at().Type == TokenTypeSmaller || p.at().Type == TokenTypeSmallerEqual || p.at().Type == TokenTypeGreater || p.at().Type == TokenTypeGreaterEqual || p.at().Type == TokenTypeDoubeEqual {
+		operator := p.next().Value
+		right, err := p.parseAssignmentExpr()
+		if err != nil {
+			return nil, err
+		}
+
+		return &ConditionExpression{
+			Stmt:     &Stmt{kind: NodeTypeConditionExpression},
+			left:     left,
+			right:    right,
+			operator: operator,
+		}, nil
+
+	}
+
+	return left, nil
 }
 
 func (p *Parser) parseAssignmentExpr() (Stmter, error) {
 	left, err := p.parseObjectExpr()
-
 	if err != nil {
 		return nil, err
 	}

@@ -128,15 +128,36 @@ print(add(1, z))
 print(sub())
 ```
 
+## Conditional expressions
+```
+let x;
+x = (1 == 1)
+print(x)
+
+x = (1 > 1)
+print(x)
+
+x = (1 < 1)
+print(x)
+
+x = (5 + 5 == 10)
+print(x)
+
+const foo = 51;
+x = (foo == 51)
+print(x)
+
+x = (foo -1 == 50)
+print(x)
+
+x = (foo > 0)
+print(x)
+```
+
 ## What comes.
+- if, if else
 - loops
-- conditions
 - classes
 
 and more..
-
-
-
-
-
 

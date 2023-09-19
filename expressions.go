@@ -35,7 +35,6 @@ func (i *Interpreter) evalNumericBinaryExpr(lhs, rhs NumberVal, operator string)
 	switch operator {
 	case "+":
 		result = lhs.Value + rhs.Value
-
 	case "-":
 		result = lhs.Value - rhs.Value
 	case "*":
@@ -137,4 +136,43 @@ func (i *Interpreter) evalCallExpr(expr *CallExpression, env *Environments) (Run
 	}
 
 	return nil, fmt.Errorf("cannot call value which is not a function")
+}
+
+func (i *Interpreter) evalConditionExpr(cnd *ConditionExpression, env *Environments) (RuntimeVal, error) {
+	lhs, err := i.evaluate(cnd.left, env)
+	if err != nil {
+		return nil, err
+	}
+	rhs, err := i.evaluate(cnd.right, env)
+	if err != nil {
+		return nil, err
+	}
+
+	lhsVal, okLhs := lhs.(*NumberVal)
+	rhsVal, okRhs := rhs.(*NumberVal)
+	if okLhs && okRhs {
+		return i.evalNumericConditionExpr(*lhsVal, *rhsVal, cnd.operator)
+	}
+
+	return makeNull(), nil
+}
+
+func (i *Interpreter) evalNumericConditionExpr(lhs, rhs NumberVal, operator string) (*BoolVal, error) {
+	var result bool
+	switch operator {
+	case "=":
+		result = lhs.Value == rhs.Value
+	case ">":
+		result = lhs.Value > rhs.Value
+	case ">=":
+		result = lhs.Value >= rhs.Value
+	case "<":
+		result = lhs.Value < rhs.Value
+	case "<=":
+		result = lhs.Value <= rhs.Value
+	default:
+		return nil, fmt.Errorf("Conditional Operator %s not implemented", operator)
+	}
+
+	return makeBool(result), nil
 }

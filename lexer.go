@@ -20,6 +20,11 @@ const (
 	TokenTypeCloseBrace
 	TokenTypeOpenBracket
 	TokenTypeCloseBracket
+	TokenTypeSmaller
+	TokenTypeGreater
+	TokenTypeSmallerEqual
+	TokenTypeGreaterEqual
+	TokenTypeDoubeEqual
 	TokenTypeBinaryOperator
 	TokenTypeLet
 	TokenTypeConst
@@ -52,8 +57,9 @@ func (t *Tokenizer) tokenize(sourceCode string) ([]Token, error) {
 	src := strings.Split(sourceCode, "")
 
 	i := 0
+	srcLen := len(src)
 	for {
-		if i == len(src) {
+		if i == srcLen {
 			break
 		}
 
@@ -80,7 +86,12 @@ func (t *Tokenizer) tokenize(sourceCode string) ([]Token, error) {
 			tokens = append(tokens, Token{Type: TokenTypeBinaryOperator, Value: src[i]})
 			i++
 		case "=":
-			tokens = append(tokens, Token{Type: TokenTypeEquals})
+			if i < srcLen-1 && src[i+1] == "=" {
+				tokens = append(tokens, Token{Type: TokenTypeDoubeEqual, Value: "="})
+				i++
+			} else {
+				tokens = append(tokens, Token{Type: TokenTypeEquals})
+			}
 			i++
 		case ";":
 			tokens = append(tokens, Token{Type: TokenTypeSemicolon})
@@ -93,6 +104,22 @@ func (t *Tokenizer) tokenize(sourceCode string) ([]Token, error) {
 			i++
 		case ".":
 			tokens = append(tokens, Token{Type: TokenTypeDot})
+			i++
+		case "<":
+			if i < srcLen-1 && src[i+1] == "=" {
+				tokens = append(tokens, Token{Type: TokenTypeSmallerEqual, Value: "<="})
+				i++
+			} else {
+				tokens = append(tokens, Token{Type: TokenTypeSmaller, Value: "<"})
+			}
+			i++
+		case ">":
+			if i < srcLen-1 && src[i+1] == "=" {
+				tokens = append(tokens, Token{Type: TokenTypeGreaterEqual, Value: ">="})
+				i++
+			} else {
+				tokens = append(tokens, Token{Type: TokenTypeGreater, Value: ">"})
+			}
 			i++
 		default:
 			tk, index, err := t.tokenizeComplex(src, i)

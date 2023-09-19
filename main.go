@@ -31,7 +31,8 @@ func main() {
 
 func testTokenizer() {
 	t := newTokenizer()
-	tokens, err := t.tokenize("let x = 45 + (50 * 2) / (foo - vakk)")
+	// tokens, err := t.tokenize("let x = 45 + (50 * 2) / (foo - vakk)")
+	tokens, err := t.tokenize("x >= 10")
 	if err != nil {
 		fmt.Println(err)
 		return
