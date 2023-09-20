@@ -33,6 +33,7 @@ const (
 	TokenTypeSemicolon
 	TokenTypeFn
 	TokenIf
+	TokenFor
 	TokenTypeEOF
 )
 
@@ -55,6 +56,7 @@ func (t *Tokenizer) tokenize(sourceCode string) ([]Token, error) {
 		"const": TokenTypeConst,
 		"fn":    TokenTypeFn,
 		"if":    TokenIf,
+		"for":   TokenFor,
 	}
 
 	var tokens []Token

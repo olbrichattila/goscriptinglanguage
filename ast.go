@@ -8,6 +8,7 @@ const (
 	NodeTypeVariableDeclaration = "VariableDeclaration"
 	NodeTypeFunctionDeclaration = "FunctionDeclaration"
 	NodeTypeIfExpression        = "IfExpressions"
+	NodeTypeForExpression       = "ForExpression"
 
 	// EXPRESSIONS
 	NodeTypeBinaryExpession     = "BinaryExpession"
@@ -58,6 +59,14 @@ type IfExpression struct {
 	*Stmt
 	condition Stmter
 	body      []Stmter
+}
+
+type ForExpression struct {
+	*Stmt
+	declaration           Stmter
+	condition             Stmter
+	incrementalExpression Stmter
+	body                  []Stmter
 }
 
 type Expr struct {

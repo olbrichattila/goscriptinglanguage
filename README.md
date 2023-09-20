@@ -211,9 +211,16 @@ if (5 != 5) {
 }
 ```
 
+### For loop
+Example:
+```
+for (let i = 0; i < 10 ; i = i + 1) {
+    print(i)
+}
+```
+
 ## What comes.
 - else, if else
-- loops
 - classes
 
 and more..

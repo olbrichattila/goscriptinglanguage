@@ -73,6 +73,8 @@ func (p *Parser) parseStmt() (Stmter, error) {
 		return p.parseFunctionDeclaration()
 	case TokenIf:
 		return p.parseIfExpression()
+	case TokenFor:
+		return p.parseForExpression()
 	default:
 		return p.parseExpr()
 	}
@@ -227,6 +229,71 @@ func (p *Parser) parseIfExpression() (Stmter, error) {
 		Stmt:      &Stmt{kind: NodeTypeIfExpression},
 		condition: cond,
 		body:      body,
+	}, nil
+}
+
+func (p *Parser) parseForExpression() (Stmter, error) {
+	p.next()
+	_, err := p.expect(TokenTypeOpenParen, "Open parenthesis expected after for statement")
+	if err != nil {
+		return nil, err
+	}
+
+	declaration, err := p.parseVarDeclaration()
+	if err != nil {
+		return nil, err
+	}
+
+	condition, err := p.parseConditionalExpr()
+	if err != nil {
+		return nil, err
+	}
+
+	_, err = p.expect(TokenTypeSemicolon, "Semicolon expected after for variable condition")
+	if err != nil {
+		return nil, err
+	}
+
+	incrementalExpression, err := p.parseExpr()
+	if err != nil {
+		return nil, err
+	}
+
+	_, err = p.expect(TokenTypeCloseParen, "Close parenthesis expected after if statement conditions")
+	if err != nil {
+		return nil, err
+	}
+
+	_, err = p.expect(TokenTypeOpenBrace, "Expected open brace after if condition")
+	if err != nil {
+		return nil, err
+	}
+
+	var body []Stmter
+
+	for {
+		if p.at().Type == TokenTypeEOF || p.at().Type == TokenTypeCloseBrace {
+			break
+		}
+		s, err := p.parseStmt()
+		if err != nil {
+			return nil, err
+		}
+
+		body = append(body, s)
+	}
+
+	_, err = p.expect(TokenTypeCloseBrace, "Closing brace expected inside function declaration")
+	if err != nil {
+		return nil, err
+	}
+
+	return &ForExpression{
+		Stmt:                  &Stmt{kind: NodeTypeForExpression},
+		declaration:           declaration,
+		condition:             condition,
+		incrementalExpression: incrementalExpression,
+		body:                  body,
 	}, nil
 }
 

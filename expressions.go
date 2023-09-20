@@ -177,3 +177,35 @@ func (i *Interpreter) evalIfExpr(ifE *IfExpression, env *Environments) (RuntimeV
 
 	return result, nil
 }
+
+func (i *Interpreter) evalForExpr(forE *ForExpression, env *Environments) (RuntimeVal, error) {
+
+	var result RuntimeVal = makeNull()
+
+	_, err := i.evaluate(forE.declaration, env)
+	if err != nil {
+		return nil, err
+	}
+
+	for {
+		cond, err := i.evaluate(forE.condition, env)
+		if err != nil {
+			return nil, err
+		}
+
+		if cond.(*BoolVal).Value == false {
+			break
+		}
+
+		_, err = i.evaluate(forE.incrementalExpression, env)
+
+		for _, statement := range forE.body {
+			result, err = i.evaluate(statement, env)
+			if err != nil {
+				return nil, err
+			}
+		}
+	}
+
+	return result, nil
+}
