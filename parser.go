@@ -613,6 +613,8 @@ func (p *Parser) parsePrimaryExpr() (Stmter, error) {
 			return nil, err
 		}
 		return &NumericLiteral{Stmt: &Stmt{kind: NodeTypeNumericLiteral}, value: value}, nil
+	case TokenTypeString:
+		return &StringLiteral{Stmt: &Stmt{kind: NodeTypeStringLIteral}, value: p.next().Value}, nil
 	case TokenTypeOpenParen:
 		p.next()
 		value, err := p.parseExpr()

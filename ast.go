@@ -21,6 +21,7 @@ const (
 	NodeTypeProperty       = "Property"
 	NodeTypeObjectLiteral  = "ObjectLiteral"
 	NodeTypeNumericLiteral = "NumericLiteral"
+	NodeTypeStringLIteral  = "StringLiteral"
 	NodeTypeIdentifier     = "Identifier"
 )
 
@@ -94,6 +95,11 @@ type Identifier struct {
 type NumericLiteral struct {
 	*Stmt
 	value float64
+}
+
+type StringLiteral struct {
+	*Stmt
+	value string
 }
 
 type Property struct {

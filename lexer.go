@@ -9,6 +9,7 @@ type TokenType int
 
 const (
 	TokenTypeNumber TokenType = iota
+	TokenTypeString
 	TokenTypeIdentifier
 	TokenTypeEquals
 	TokenTypeComma
@@ -187,6 +188,34 @@ func (t *Tokenizer) tokenizeComplex(src []string, i int) (*Token, int, error) {
 		}
 
 		return &Token{Type: TokenTypeIdentifier, Value: alpha}, i, nil
+	}
+
+	if src[i] == "\"" {
+		str := ""
+		if i == len(src) {
+			return nil, i, fmt.Errorf("After opening quote there should be at least one closin quote")
+		}
+		i++
+
+		for {
+			if i < len(src)-1 && src[i] == "\"" && src[i+1] == "\"" {
+				str += "\""
+				i++
+				i++
+			}
+
+			if i == len(src) || src[i] == "\"" {
+				break
+			}
+			str += src[i]
+			i++
+		}
+
+		if i < len(src) {
+			i++
+		}
+
+		return &Token{Type: TokenTypeString, Value: str}, i, nil
 	}
 
 	if t.isSkippable(src[i]) {

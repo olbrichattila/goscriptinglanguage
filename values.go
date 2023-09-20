@@ -5,6 +5,7 @@ type ValueType int
 const (
 	ValueTypeNull ValueType = iota
 	ValueTypeNumber
+	ValueTypeString
 	ValueBoolean
 	ValueObject
 	ValueNativeFunction
@@ -22,6 +23,11 @@ type NullVal struct {
 type NumberVal struct {
 	Type  ValueType
 	Value float64
+}
+
+type StringVal struct {
+	Type  ValueType
+	Value string
 }
 
 type BoolVal struct {
@@ -49,6 +55,10 @@ type FnValue struct {
 
 func makeNumber(n float64) *NumberVal {
 	return &NumberVal{Type: ValueTypeNumber, Value: n}
+}
+
+func makeString(s string) *StringVal {
+	return &StringVal{Type: ValueTypeString, Value: s}
 }
 
 func makeNull() *NullVal {

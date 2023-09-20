@@ -14,6 +14,8 @@ func (i *Interpreter) evaluate(astNode Stmter, env *Environments) (RuntimeVal, e
 	switch kind {
 	case NodeTypeNumericLiteral:
 		return makeNumber(astNode.(*NumericLiteral).value), nil
+	case NodeTypeStringLIteral:
+		return makeString(astNode.(*StringLiteral).value), nil
 	case NodeTypeBinaryExpession:
 		return i.evalBinaryExpression(astNode.(*BinaryExpession), env)
 	case NodeTypeProgram:
