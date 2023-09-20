@@ -104,5 +104,10 @@ func (e *Environments) declareDefaultEnv() error {
 		return err
 	}
 
+	_, err = e.declareVar("numToStr", makeNativeFn(ntNumToString), true)
+	if err != nil {
+		return err
+	}
+
 	return nil
 }

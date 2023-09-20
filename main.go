@@ -13,7 +13,7 @@ func main() {
 		return
 	}
 
-	mode := 1
+	mode := 2
 
 	switch mode {
 	case 1:
@@ -43,7 +43,7 @@ func testTokenizer() {
 
 func testing(env *Environments) {
 
-	s, _ := readFile("./test.gl")
+	s, _ := readFile("./example_task.gl")
 
 	p := newParser()
 	parsed, err := p.produceAST(s)
@@ -53,13 +53,11 @@ func testing(env *Environments) {
 	}
 
 	i := newInterpreter()
-	e, err := i.evaluate(parsed, env)
+	_, err = i.evaluate(parsed, env)
 	if err != nil {
 		fmt.Println(err)
 		return
-
 	}
-	fmt.Println(e)
 }
 
 func propmt(env *Environments) {
@@ -77,13 +75,13 @@ func propmt(env *Environments) {
 		}
 
 		i := newInterpreter()
-		e, err := i.evaluate(parsed, env)
+		_, err = i.evaluate(parsed, env)
 		if err != nil {
 			fmt.Println(err)
 
 			continue
 		}
-		fmt.Println(e)
+		// fmt.Println(e)
 		// fmt.Println(parsed)
 	}
 }
@@ -103,13 +101,13 @@ func executeScript(env *Environments) {
 	}
 
 	i := newInterpreter()
-	e, err := i.evaluate(parsed, env)
+	_, err = i.evaluate(parsed, env)
 	if err != nil {
 		fmt.Println(err)
 		return
 	}
 
-	fmt.Println(e)
+	// fmt.Println(e)
 	// prettyPrint(parsed)
 }
 

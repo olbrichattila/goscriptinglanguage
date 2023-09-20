@@ -1,0 +1,11 @@
+let mod = 0;
+for (let i = 0; i < 100; i = i + 1) {
+    mod = i % 3
+    if (mod == 0) {
+        print(numToStr(i) + " can be devided by 3")
+    }
+
+    if (mod != 0) {
+        print(i)
+    }
+}

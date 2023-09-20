@@ -86,6 +86,21 @@ foo = obj.foo() + 5
 ```
 print(1, 5)
 time()
+numToStr(5)
+```
+Example of num to str
+```
+let mod = 0;
+for (let i = 0; i < 100; i = i + 1) {
+    mod = i % 3
+    if (mod == 0) {
+        print(numToStr(i) + " can be devided by 3")
+    }
+
+    if (mod != 0) {
+        print(i)
+    }
+}
 ```
 
 ### User defined functions Functions, closures with variable scopes
@@ -217,6 +232,19 @@ Example:
 for (let i = 0; i < 10 ; i = i + 1) {
     print(i)
 }
+```
+## String assignment and comparision
+```
+const a = "Arnold";
+const b = "Bruno";
+
+print(a + " " + b)
+print ((a < b))
+print ((a > b))
+print ((a == b))
+print ((a != b))
+print ((a <= b))
+print ((a >= b))
 ```
 
 ## What comes.

@@ -18,6 +18,12 @@ func (i *Interpreter) evalBinaryExpression(binop *BinaryExpession, env *Environm
 		return i.evalNumericBinaryExpr(*lhsVal, *rhsVal, binop.operator)
 	}
 
+	lsVal, okLs := lhs.(*StringVal)
+	rsVal, okRs := rhs.(*StringVal)
+	if okLs && okRs {
+		return i.evalStringBinaryExpr(*lsVal, *rsVal, binop.operator)
+	}
+
 	return makeNull(), nil
 }
 
@@ -51,6 +57,18 @@ func (i *Interpreter) evalNumericBinaryExpr(lhs, rhs NumberVal, operator string)
 	}
 
 	return makeNumber(result), nil
+}
+
+func (i *Interpreter) evalStringBinaryExpr(lhs, rhs StringVal, operator string) (*StringVal, error) {
+	var result string
+	switch operator {
+	case "+":
+		result = lhs.Value + rhs.Value
+	default:
+		return nil, fmt.Errorf("Operator %s not implemented", operator)
+	}
+
+	return makeString(result), nil
 }
 
 func (i *Interpreter) evalAssignment(node *AssignmentExpr, env *Environments) (RuntimeVal, error) {
@@ -154,6 +172,28 @@ func (i *Interpreter) evalNumericConditionExpr(lhs, rhs NumberVal, operator stri
 		result = lhs.Value != rhs.Value
 	default:
 		return nil, fmt.Errorf("Conditional Operator %s not implemented", operator)
+	}
+
+	return makeBool(result), nil
+}
+
+func (i *Interpreter) evalStringConditionExpr(lhs, rhs StringVal, operator string) (*BoolVal, error) {
+	var result bool
+	switch operator {
+	case "=":
+		result = lhs.Value == rhs.Value
+	case ">":
+		result = lhs.Value > rhs.Value
+	case ">=":
+		result = lhs.Value >= rhs.Value
+	case "<":
+		result = lhs.Value < rhs.Value
+	case "<=":
+		result = lhs.Value <= rhs.Value
+	case "!=":
+		result = lhs.Value != rhs.Value
+	default:
+		return nil, fmt.Errorf("String Conditional Operator %s not implemented", operator)
 	}
 
 	return makeBool(result), nil

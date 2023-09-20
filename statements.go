@@ -44,6 +44,12 @@ func (i *Interpreter) evalConditionDeclaration(cnd *ConditionDeclaration, env *E
 		return i.evalNumericConditionExpr(*lhsVal, *rhsVal, cnd.operator)
 	}
 
+	lsVal, okLs := lhs.(*StringVal)
+	rsVal, okRs := rhs.(*StringVal)
+	if okLs && okRs {
+		return i.evalStringConditionExpr(*lsVal, *rsVal, cnd.operator)
+	}
+
 	return makeNull(), nil
 }
 
