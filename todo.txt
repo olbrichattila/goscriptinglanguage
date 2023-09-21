@@ -1,5 +1,4 @@
 Add line and character number from source code to Token and carry over to Ast node to be able to provide better error message
-Add // comments
 Add len()
 Add substr()
 Add do (cond) {}

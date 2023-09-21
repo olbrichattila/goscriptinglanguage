@@ -94,8 +94,17 @@ func (t *Tokenizer) tokenize(sourceCode string) ([]Token, error) {
 			tokens = append(tokens, Token{Type: TokenTypeCloseBracket})
 			i++
 		case "+", "-", "/", "*", "%":
-			tokens = append(tokens, Token{Type: TokenTypeBinaryOperator, Value: src[i]})
-			i++
+			if i < srcLen-1 && src[i+1] == "/" {
+				for {
+					if i == len(src) || src[i] == "\n" {
+						break
+					}
+					i++
+				}
+			} else {
+				tokens = append(tokens, Token{Type: TokenTypeBinaryOperator, Value: src[i]})
+				i++
+			}
 		case "=":
 			if i < srcLen-1 && src[i+1] == "=" {
 				tokens = append(tokens, Token{Type: TokenTypeDoubeEqual, Value: "="})
