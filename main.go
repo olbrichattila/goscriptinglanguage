@@ -12,8 +12,13 @@ func main() {
 		fmt.Println(err)
 		return
 	}
-
 	mode := 2
+
+	if len(os.Args) > 1 {
+		if os.Args[1] == "prompt" {
+			mode = 1
+		}
+	}
 
 	switch mode {
 	case 1:

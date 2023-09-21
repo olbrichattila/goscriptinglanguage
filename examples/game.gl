@@ -1,0 +1,21 @@
+println("Think a number between 1 and 100, I'll try to find out what it is")
+
+let min = 0;
+let max = 100;
+let tip;
+let answer;
+for (var i = 0; i<1; i = i + 0) {
+    tip = round(min + (max - min) / 2)
+    println("My tip is " + numToStr(tip) + " (b) for bigger, (s) for smaller, (o) for ok")
+    answer = input()
+    if (answer == "b") {
+        min = tip
+    } elseif(answer == "s") {
+        max = tip
+    } elseif(answer == "o") {
+        println("Heureka, good tip")
+        i = 2
+    } else {
+        println("Incorrect letter, try again")
+    }
+}

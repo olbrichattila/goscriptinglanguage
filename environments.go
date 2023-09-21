@@ -1,6 +1,10 @@
 package main
 
-import "fmt"
+import (
+	"fmt"
+	"math/rand"
+	"time"
+)
 
 type Environments struct {
 	parent    *Environments
@@ -78,6 +82,7 @@ func (e *Environments) lookupVar(varName string) (RuntimeVal, error) {
 }
 
 func (e *Environments) declareDefaultEnv() error {
+	rand.Seed(time.Now().UnixNano())
 	_, err := e.declareVar("null", makeNull(), true)
 	if err != nil {
 		return err
@@ -114,7 +119,22 @@ func (e *Environments) declareDefaultEnv() error {
 		return err
 	}
 
+	_, err = e.declareVar("strToNum", makeNativeFn(ntStringToNum), true)
+	if err != nil {
+		return err
+	}
+
 	_, err = e.declareVar("input", makeNativeFn(ntInput), true)
+	if err != nil {
+		return err
+	}
+
+	_, err = e.declareVar("round", makeNativeFn(ntRound), true)
+	if err != nil {
+		return err
+	}
+
+	_, err = e.declareVar("rand", makeNativeFn(ntRand), true)
 	if err != nil {
 		return err
 	}

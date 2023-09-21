@@ -8,6 +8,7 @@ const obj = {
    },
 };
 
-print(1,5)
+println(1,5)
 let f = obj.complex.bar;
+println(f)
 foo = obj.foo() + 5

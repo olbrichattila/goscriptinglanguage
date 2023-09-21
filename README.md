@@ -88,6 +88,7 @@ print(1, 5)
 time()
 numToStr(5)
 input()
+round(num, decimals)
 ```
 ### Example of num to str
 ```
