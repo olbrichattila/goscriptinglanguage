@@ -200,9 +200,15 @@ func (i *Interpreter) evalStringConditionExpr(lhs, rhs StringVal, operator strin
 }
 
 func (i *Interpreter) evalIfExpr(ifE *IfExpression, env *Environments) (RuntimeVal, error) {
-	cond, err := i.evaluate(ifE.condition, env)
-	if err != nil {
-		return nil, err
+	var cond RuntimeVal
+	var err error
+	if ifE.condition == nil {
+		cond = makeBool(true)
+	} else {
+		cond, err = i.evaluate(ifE.condition, env)
+		if err != nil {
+			return nil, err
+		}
 	}
 
 	var result RuntimeVal = makeNull()
@@ -213,6 +219,8 @@ func (i *Interpreter) evalIfExpr(ifE *IfExpression, env *Environments) (RuntimeV
 				return nil, err
 			}
 		}
+	} else if ifE.elseExpression != nil {
+		return i.evalIfExpr(ifE.elseExpression.(*IfExpression), env)
 	}
 
 	return result, nil

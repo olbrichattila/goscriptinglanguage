@@ -99,6 +99,11 @@ func (e *Environments) declareDefaultEnv() error {
 		return err
 	}
 
+	_, err = e.declareVar("println", makeNativeFn(ntPrintLn), true)
+	if err != nil {
+		return err
+	}
+
 	_, err = e.declareVar("time", makeNativeFn(ntTime), true)
 	if err != nil {
 		return err

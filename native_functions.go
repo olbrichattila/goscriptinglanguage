@@ -9,33 +9,49 @@ import (
 type FunctionCall func([]RuntimeVal, *Environments) RuntimeVal
 
 func ntPrint(args []RuntimeVal, env *Environments) RuntimeVal {
+	return ntPrinter(args, env, false)
+}
+
+func ntPrintLn(args []RuntimeVal, env *Environments) RuntimeVal {
+	return ntPrinter(args, env, true)
+}
+
+func ntPrinter(args []RuntimeVal, env *Environments, ln bool) RuntimeVal {
+	succ := false
 	for _, arg := range args {
 		if v, ok := arg.(*NumberVal); ok {
-			fmt.Println(v.Value)
-			continue
+			fmt.Print(v.Value)
+			succ = true
 		}
 
 		if v, ok := arg.(*StringVal); ok {
-			fmt.Println(v.Value)
-			continue
+			fmt.Print(v.Value)
+			succ = true
 		}
 
 		if v, ok := arg.(*NullVal); ok {
-			fmt.Println(v.Value)
-			continue
+			fmt.Print(v.Value)
+			succ = true
 		}
 
 		if v, ok := arg.(*BoolVal); ok {
-			fmt.Println(v.Value)
-			continue
+			fmt.Print(v.Value)
+			succ = true
 		}
 
 		if v, ok := arg.(*ObjectVal); ok {
-			fmt.Println(v.properties)
-			continue
+			fmt.Print(v.properties)
+			succ = true
 		}
 
-		fmt.Print("Cannot print this data type")
+		if succ == false {
+			fmt.Print("Cannot print this data type")
+		}
+
+		if ln == true {
+			fmt.Println()
+		}
+
 	}
 
 	return makeNull()

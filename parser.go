@@ -71,7 +71,7 @@ func (p *Parser) parseStmt() (Stmter, error) {
 		return p.parseVarDeclaration()
 	case TokenTypeFn:
 		return p.parseFunctionDeclaration()
-	case TokenIf:
+	case TokenTypeIf:
 		return p.parseIfExpression()
 	case TokenFor:
 		return p.parseForExpression()
@@ -185,20 +185,25 @@ func (p *Parser) parseFunctionDeclaration() (Stmter, error) {
 }
 
 func (p *Parser) parseIfExpression() (Stmter, error) {
-	p.next()
-	_, err := p.expect(TokenTypeOpenParen, "Open parenthesis expected after if statement")
-	if err != nil {
-		return nil, err
-	}
+	tType := p.next().Type
+	var cond Stmter
+	var err error
 
-	cond, err := p.parseConditionalExpr()
-	if err != nil {
-		return nil, err
-	}
+	if tType != TokenTypeElse {
+		_, err := p.expect(TokenTypeOpenParen, "Open parenthesis expected after if statement")
+		if err != nil {
+			return nil, err
+		}
 
-	_, err = p.expect(TokenTypeCloseParen, "Close parenthesis expected after if statement conditions")
-	if err != nil {
-		return nil, err
+		cond, err = p.parseConditionalExpr()
+		if err != nil {
+			return nil, err
+		}
+
+		_, err = p.expect(TokenTypeCloseParen, "Close parenthesis expected after if statement conditions")
+		if err != nil {
+			return nil, err
+		}
 	}
 
 	_, err = p.expect(TokenTypeOpenBrace, "Expected open brace after if condition")
@@ -225,10 +230,20 @@ func (p *Parser) parseIfExpression() (Stmter, error) {
 		return nil, err
 	}
 
+	var elseExpression Stmter
+
+	if p.at().Type == TokenTypeElse || p.at().Type == TokenTypeElseIf {
+		elseExpression, err = p.parseIfExpression()
+		if err != nil {
+			return nil, err
+		}
+	}
+
 	return &IfExpression{
-		Stmt:      &Stmt{kind: NodeTypeIfExpression},
-		condition: cond,
-		body:      body,
+		Stmt:           &Stmt{kind: NodeTypeIfExpression},
+		condition:      cond,
+		body:           body,
+		elseExpression: elseExpression,
 	}, nil
 }
 

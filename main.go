@@ -13,7 +13,7 @@ func main() {
 		return
 	}
 
-	mode := 2
+	mode := 3
 
 	switch mode {
 	case 1:
@@ -43,7 +43,7 @@ func testTokenizer() {
 
 func testing(env *Environments) {
 
-	s, _ := readFile("./example_task.gl")
+	s, _ := readFile("./example_else.gl")
 
 	p := newParser()
 	parsed, err := p.produceAST(s)

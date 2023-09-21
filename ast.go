@@ -58,8 +58,9 @@ type FunctionDeclaration struct {
 
 type IfExpression struct {
 	*Stmt
-	condition Stmter
-	body      []Stmter
+	condition      Stmter
+	body           []Stmter
+	elseExpression Stmter
 }
 
 type ForExpression struct {

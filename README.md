@@ -226,6 +226,45 @@ if (5 != 5) {
 }
 ```
 
+### Else
+Examples:
+```
+if (1 == 2) {
+    println("if")
+} elseif (2 == 2) {
+    println("elseif")
+} elseif (2 == 4) {
+    println("else2if")
+} else {
+    println("else3")
+}
+
+
+if (1 == 2) {
+    println("if")
+} elseif (2 == 3) {
+    println("elseif")
+} elseif (2 == 4) {
+    println("else2if")
+} else {
+    println("else3")
+}
+
+if (1 == 1) {
+    println("if1")
+} else {
+    println("if2")
+}
+
+
+if (1 == 2) {
+    println("if3")
+} else {
+    println("if4")
+}
+
+```
+
 ### For loop
 Example:
 ```
@@ -248,7 +287,7 @@ print ((a >= b))
 ```
 
 ## What comes.
-- else, if else
+
 - classes
 
 and more..

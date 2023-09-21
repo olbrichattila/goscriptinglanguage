@@ -33,7 +33,9 @@ const (
 	TokenTypeConst
 	TokenTypeSemicolon
 	TokenTypeFn
-	TokenIf
+	TokenTypeIf
+	TokenTypeElse
+	TokenTypeElseIf
 	TokenFor
 	TokenTypeEOF
 )
@@ -53,11 +55,13 @@ func newTokenizer() *Tokenizer {
 
 func (t *Tokenizer) tokenize(sourceCode string) ([]Token, error) {
 	t.keywords = map[string]TokenType{
-		"let":   TokenTypeLet,
-		"const": TokenTypeConst,
-		"fn":    TokenTypeFn,
-		"if":    TokenIf,
-		"for":   TokenFor,
+		"let":    TokenTypeLet,
+		"const":  TokenTypeConst,
+		"fn":     TokenTypeFn,
+		"if":     TokenTypeIf,
+		"else":   TokenTypeElse,
+		"elseif": TokenTypeElseIf,
+		"for":    TokenFor,
 	}
 
 	var tokens []Token
