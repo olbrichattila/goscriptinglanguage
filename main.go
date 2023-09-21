@@ -36,7 +36,6 @@ func main() {
 
 func testTokenizer() {
 	t := newTokenizer()
-	// tokens, err := t.tokenize("let x = 45 + (50 * 2) / (foo - vakk)")
 	tokens, err := t.tokenize("x >= 10")
 	if err != nil {
 		fmt.Println(err)
@@ -86,8 +85,6 @@ func propmt(env *Environments) {
 
 			continue
 		}
-		// fmt.Println(e)
-		// fmt.Println(parsed)
 	}
 }
 
@@ -111,9 +108,6 @@ func executeScript(env *Environments) {
 		fmt.Println(err)
 		return
 	}
-
-	// fmt.Println(e)
-	// prettyPrint(parsed)
 }
 
 func readFromConsole() string {

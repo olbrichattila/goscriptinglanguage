@@ -87,8 +87,11 @@ foo = obj.foo() + 5
 print(1, 5)
 time()
 numToStr(5)
+strToNum("53")
 input()
 round(num, decimals)
+rand(10) // parameter is optional, 0 to range
+
 ```
 ### Example of num to str
 ```
