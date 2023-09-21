@@ -13,7 +13,7 @@ func main() {
 		return
 	}
 
-	mode := 3
+	mode := 2
 
 	switch mode {
 	case 1:
