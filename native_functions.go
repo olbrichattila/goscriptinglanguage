@@ -1,7 +1,9 @@
 package main
 
 import (
+	"bufio"
 	"fmt"
+	"os"
 	"strconv"
 	"time"
 )
@@ -70,4 +72,11 @@ func ntNumToString(args []RuntimeVal, env *Environments) RuntimeVal {
 	}
 
 	return makeNull()
+}
+
+func ntInput(args []RuntimeVal, env *Environments) RuntimeVal {
+	reader := bufio.NewReader(os.Stdin)
+	text, _ := reader.ReadString('\n')
+
+	return makeString(text)
 }

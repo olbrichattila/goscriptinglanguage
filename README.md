@@ -87,8 +87,9 @@ foo = obj.foo() + 5
 print(1, 5)
 time()
 numToStr(5)
+input()
 ```
-Example of num to str
+### Example of num to str
 ```
 let mod = 0;
 for (let i = 0; i < 100; i = i + 1) {
@@ -101,6 +102,13 @@ for (let i = 0; i < 100; i = i + 1) {
         print(i)
     }
 }
+```
+
+## Example input (reads from console)
+```
+print("What is your name? ")
+let name = input();
+print("Hello " + name)
 ```
 
 ### User defined functions Functions, closures with variable scopes
