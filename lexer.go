@@ -54,7 +54,7 @@ func newTokenizer() *Tokenizer {
 	return &Tokenizer{}
 }
 
-func (t *Tokenizer) tokenize(sourceCode string) ([]Token, error) {
+func (t *Tokenizer) tokenize(sourceCode string) ([]Token, *CustomError) {
 	t.keywords = map[string]TokenType{
 		"let":    TokenTypeLet,
 		"const":  TokenTypeConst,
@@ -173,7 +173,7 @@ func (t *Tokenizer) tokenize(sourceCode string) ([]Token, error) {
 	return tokens, nil
 }
 
-func (t *Tokenizer) tokenizeComplex(src []string, i int) (*Token, int, error) {
+func (t *Tokenizer) tokenizeComplex(src []string, i int) (*Token, int, *CustomError) {
 	if t.isInt(src[i]) {
 		num := ""
 		for {
@@ -207,7 +207,9 @@ func (t *Tokenizer) tokenizeComplex(src []string, i int) (*Token, int, error) {
 	if src[i] == "\"" {
 		str := ""
 		if i == len(src) {
-			return nil, i, fmt.Errorf("After opening quote there should be at least one closin quote")
+			err := newCustomError("After opening quote there should be at least one closing quote")
+			err.addTrace(i)
+			return nil, i, err
 		}
 		i++
 
@@ -237,7 +239,9 @@ func (t *Tokenizer) tokenizeComplex(src []string, i int) (*Token, int, error) {
 		return nil, i, nil
 	}
 
-	return nil, i, fmt.Errorf("Uncrecoginized charecter found in source %s", src[i])
+	rErr := newCustomError(fmt.Sprintf("Uncrecoginized charecter found in source %s", src[i]))
+	rErr.addTrace(i)
+	return nil, i, rErr
 }
 
 func (t *Tokenizer) isSkippable(s string) bool {

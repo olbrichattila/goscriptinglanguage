@@ -9,6 +9,7 @@ func newCustomError(m string) *CustomError {
 	return &CustomError{message: m}
 }
 
-func (cm *CustomError) addTrace(pos int) {
+func (cm *CustomError) addTrace(pos int) *CustomError {
 	cm.trace = append(cm.trace, pos)
+	return cm
 }

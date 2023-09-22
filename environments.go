@@ -12,7 +12,7 @@ type Environments struct {
 	constants map[string]interface{}
 }
 
-func newEnvironments(parent *Environments) (*Environments, error) {
+func newEnvironments(parent *Environments) (*Environments, *CustomError) {
 	e := &Environments{
 		parent:    parent,
 		variables: make(map[string]RuntimeVal),
@@ -29,10 +29,12 @@ func newEnvironments(parent *Environments) (*Environments, error) {
 	return e, nil
 }
 
-func (e *Environments) declareVar(varName string, value RuntimeVal, constant bool) (RuntimeVal, error) {
+func (e *Environments) declareVar(varName string, value RuntimeVal, constant bool) (RuntimeVal, *CustomError) {
 	_, exist := e.variables[varName]
 	if exist {
-		return nil, fmt.Errorf("Variable %s already exists", varName)
+		return nil, newCustomError(
+			fmt.Sprintf("Variable %s already exists", varName),
+		)
 	}
 	e.variables[varName] = value
 	if constant {
@@ -42,7 +44,7 @@ func (e *Environments) declareVar(varName string, value RuntimeVal, constant boo
 	return value, nil
 }
 
-func (e *Environments) assignVar(varName string, value RuntimeVal) (RuntimeVal, error) {
+func (e *Environments) assignVar(varName string, value RuntimeVal) (RuntimeVal, *CustomError) {
 	env, err := e.resolve(varName)
 	if err != nil {
 		return nil, err
@@ -50,7 +52,7 @@ func (e *Environments) assignVar(varName string, value RuntimeVal) (RuntimeVal, 
 
 	_, exist := e.constants[varName]
 	if exist {
-		return nil, fmt.Errorf("Constant variable %s cannot be updated", varName)
+		return nil, newCustomError(fmt.Sprintf("Constant variable %s cannot be updated", varName))
 	}
 
 	env.variables[varName] = value
@@ -58,19 +60,19 @@ func (e *Environments) assignVar(varName string, value RuntimeVal) (RuntimeVal, 
 	return value, nil
 }
 
-func (e *Environments) resolve(varName string) (*Environments, error) {
+func (e *Environments) resolve(varName string) (*Environments, *CustomError) {
 	_, exist := e.variables[varName]
 	if exist {
 		return e, nil
 	}
 	if e.parent == nil {
-		return nil, fmt.Errorf("Variable %s could not be resolved", varName)
+		return nil, newCustomError(fmt.Sprintf("Variable %s could not be resolved", varName))
 	}
 
 	return e.parent.resolve(varName)
 }
 
-func (e *Environments) lookupVar(varName string) (RuntimeVal, error) {
+func (e *Environments) lookupVar(varName string) (RuntimeVal, *CustomError) {
 	env, err := e.resolve(varName)
 	if err != nil {
 		return nil, err
@@ -81,7 +83,7 @@ func (e *Environments) lookupVar(varName string) (RuntimeVal, error) {
 	return value, nil
 }
 
-func (e *Environments) declareDefaultEnv() error {
+func (e *Environments) declareDefaultEnv() *CustomError {
 	rand.Seed(time.Now().UnixNano())
 	_, err := e.declareVar("null", makeNull(), true)
 	if err != nil {

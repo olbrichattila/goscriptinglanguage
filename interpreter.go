@@ -9,7 +9,7 @@ func newInterpreter() *Interpreter {
 	return &Interpreter{}
 }
 
-func (i *Interpreter) evaluate(astNode Stmter, env *Environments) (RuntimeVal, error) {
+func (i *Interpreter) evaluate(astNode Stmter, env *Environments) (RuntimeVal, *CustomError) {
 	kind := astNode.Kind()
 	switch kind {
 	case NodeTypeNumericLiteral:
@@ -39,6 +39,8 @@ func (i *Interpreter) evaluate(astNode Stmter, env *Environments) (RuntimeVal, e
 	case NodeTypeForExpression:
 		return i.evalForExpr(astNode.(*ForExpression), env)
 	default:
-		return nil, fmt.Errorf("This AST node has not yet been setup for interpretation %s at position %d", kind, astNode.Pos())
+		err := newCustomError(fmt.Sprintf("This AST node has not yet been setup for interpretation %s", kind))
+		err.addTrace(astNode.Pos())
+		return nil, err
 	}
 }

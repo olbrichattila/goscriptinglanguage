@@ -14,7 +14,7 @@ func newParser() *Parser {
 	return &Parser{}
 }
 
-func (p *Parser) produceAST(sourceCode string) (*Program, error) {
+func (p *Parser) produceAST(sourceCode string) (*Program, *CustomError) {
 	t := newTokenizer()
 	tokens, err := t.tokenize(sourceCode)
 	if err != nil {
@@ -56,18 +56,16 @@ func (p *Parser) next() Token {
 	return token
 }
 
-func (p *Parser) expect(t TokenType, errMsg string) (*Token, error) {
+func (p *Parser) expect(t TokenType, errMsg string) (*Token, *CustomError) {
 	prev := p.next()
 	if prev.Type != t {
-		return nil, fmt.Errorf(
-			fmt.Sprintf("%s at position: %d", errMsg, prev.Pos),
-		)
+		return nil, newCustomError(errMsg).addTrace(prev.Pos)
 	}
 
 	return &prev, nil
 }
 
-func (p *Parser) parseStmt() (Stmter, error) {
+func (p *Parser) parseStmt() (Stmter, *CustomError) {
 	switch p.at().Type {
 	case TokenTypeLet, TokenTypeConst:
 		return p.parseVarDeclaration()
@@ -82,7 +80,7 @@ func (p *Parser) parseStmt() (Stmter, error) {
 	}
 }
 
-func (p *Parser) parseVarDeclaration() (Stmter, error) {
+func (p *Parser) parseVarDeclaration() (Stmter, *CustomError) {
 	tokenType := p.next().Type
 	token := p.at()
 	isConstant := tokenType == TokenTypeConst
@@ -94,7 +92,7 @@ func (p *Parser) parseVarDeclaration() (Stmter, error) {
 	if p.at().Type == TokenTypeSemicolon {
 		p.next()
 		if isConstant {
-			return nil, fmt.Errorf("Must assign value to constant experssion, no value provided")
+			return nil, newCustomError("Must assign value to constant experssion, no value provided")
 		}
 
 		return &VariableDeclaration{
@@ -130,7 +128,7 @@ func (p *Parser) parseVarDeclaration() (Stmter, error) {
 	return declaration, nil
 }
 
-func (p *Parser) parseFunctionDeclaration() (Stmter, error) {
+func (p *Parser) parseFunctionDeclaration() (Stmter, *CustomError) {
 	p.next()
 	token, err := p.expect(TokenTypeIdentifier, "Expected function name following fn keyword")
 	if err != nil {
@@ -148,7 +146,7 @@ func (p *Parser) parseFunctionDeclaration() (Stmter, error) {
 	for _, arg := range args {
 		a := *arg
 		if a.Kind() != NodeTypeIdentifier {
-			return nil, fmt.Errorf("Inside function declatation expected paramegters to be string")
+			return nil, newCustomError("Inside function declatation expected paramegters to be string")
 		}
 
 		params = append(params, a.(*Identifier).symbol)
@@ -186,10 +184,10 @@ func (p *Parser) parseFunctionDeclaration() (Stmter, error) {
 	}, nil
 }
 
-func (p *Parser) parseIfExpression() (Stmter, error) {
+func (p *Parser) parseIfExpression() (Stmter, *CustomError) {
 	tType := p.next().Type
 	var cond Stmter
-	var err error
+	var err *CustomError
 
 	if tType != TokenTypeElse {
 		_, err := p.expect(TokenTypeOpenParen, "Open parenthesis expected after if statement")
@@ -249,9 +247,9 @@ func (p *Parser) parseIfExpression() (Stmter, error) {
 	}, nil
 }
 
-func (p *Parser) parseForExpression() (Stmter, error) {
+func (p *Parser) parseForExpression() (Stmter, *CustomError) {
 	// @TODO refactor to decrease complexity, factor out syntax variations phraser
-	var err error
+	var err *CustomError
 	var afterCondition, declaration, condition, incrementalExpression Stmter
 	p.next()
 
@@ -347,11 +345,11 @@ func (p *Parser) parseForExpression() (Stmter, error) {
 	}, nil
 }
 
-func (p *Parser) parseExpr() (Stmter, error) {
+func (p *Parser) parseExpr() (Stmter, *CustomError) {
 	return p.parseConditionalExpr()
 }
 
-func (p *Parser) parseConditionalExpr() (Stmter, error) {
+func (p *Parser) parseConditionalExpr() (Stmter, *CustomError) {
 	left, err := p.parseAssignmentExpr()
 	if err != nil {
 		return nil, err
@@ -375,7 +373,7 @@ func (p *Parser) parseConditionalExpr() (Stmter, error) {
 	return left, nil
 }
 
-func (p *Parser) parseAssignmentExpr() (Stmter, error) {
+func (p *Parser) parseAssignmentExpr() (Stmter, *CustomError) {
 	left, err := p.parseObjectExpr()
 	if err != nil {
 		return nil, err
@@ -395,7 +393,7 @@ func (p *Parser) parseAssignmentExpr() (Stmter, error) {
 	return left, nil
 }
 
-func (p *Parser) parseObjectExpr() (Stmter, error) {
+func (p *Parser) parseObjectExpr() (Stmter, *CustomError) {
 
 	if p.at().Type != TokenTypeOpenBrace {
 		return p.parseAdditiveExpr()
@@ -456,7 +454,7 @@ func (p *Parser) parseObjectExpr() (Stmter, error) {
 	return &ObjectLiteral{Stmt: &Stmt{kind: NodeTypeObjectLiteral, pos: p.at().Pos}, properties: properties}, nil
 }
 
-func (p *Parser) parseAdditiveExpr() (Stmter, error) {
+func (p *Parser) parseAdditiveExpr() (Stmter, *CustomError) {
 	left, err := p.parseMultiplicativeExpr()
 	if err != nil {
 		return nil, err
@@ -484,7 +482,7 @@ func (p *Parser) parseAdditiveExpr() (Stmter, error) {
 	return left, nil
 }
 
-func (p *Parser) parseMultiplicativeExpr() (Stmter, error) {
+func (p *Parser) parseMultiplicativeExpr() (Stmter, *CustomError) {
 	left, err := p.parseCallMemberExpr()
 	if err != nil {
 		return nil, err
@@ -512,7 +510,7 @@ func (p *Parser) parseMultiplicativeExpr() (Stmter, error) {
 	return left, nil
 }
 
-func (p *Parser) parseCallMemberExpr() (Stmter, error) {
+func (p *Parser) parseCallMemberExpr() (Stmter, *CustomError) {
 	member, err := p.parseMemberExpr()
 	if err != nil {
 		return nil, err
@@ -525,7 +523,7 @@ func (p *Parser) parseCallMemberExpr() (Stmter, error) {
 	return member, nil
 }
 
-func (p *Parser) parseCallExpr(caller Stmter) (Stmter, error) {
+func (p *Parser) parseCallExpr(caller Stmter) (Stmter, *CustomError) {
 
 	args, err := p.parseArgs()
 	if err != nil {
@@ -551,7 +549,7 @@ func (p *Parser) parseCallExpr(caller Stmter) (Stmter, error) {
 	return callExpr, nil
 }
 
-func (p *Parser) parseMemberExpr() (Stmter, error) {
+func (p *Parser) parseMemberExpr() (Stmter, *CustomError) {
 	object, err := p.parsePrimaryExpr()
 	if err != nil {
 		return nil, err
@@ -575,7 +573,7 @@ func (p *Parser) parseMemberExpr() (Stmter, error) {
 			}
 
 			if property.Kind() != NodeTypeIdentifier {
-				return nil, fmt.Errorf("Cannot use operatior without right hand side being an identifier")
+				return nil, newCustomError("Cannot use operatior without right hand side being an identifier")
 			}
 		} else {
 			computed = true
@@ -602,8 +600,8 @@ func (p *Parser) parseMemberExpr() (Stmter, error) {
 	return object, nil
 }
 
-func (p *Parser) parseArgs() ([]*Stmter, error) {
-	var err error
+func (p *Parser) parseArgs() ([]*Stmter, *CustomError) {
+	var err *CustomError
 	_, err = p.expect(TokenTypeOpenParen, "Expected open parantesis")
 	if err != nil {
 		return nil, err
@@ -625,7 +623,7 @@ func (p *Parser) parseArgs() ([]*Stmter, error) {
 	return args, nil
 }
 
-func (p *Parser) parseArgumentsLists() ([]*Stmter, error) {
+func (p *Parser) parseArgumentsLists() ([]*Stmter, *CustomError) {
 	var args []*Stmter
 	arg, err := p.parseAssignmentExpr()
 	if err != nil {
@@ -651,7 +649,7 @@ func (p *Parser) parseArgumentsLists() ([]*Stmter, error) {
 	return args, nil
 }
 
-func (p *Parser) parsePrimaryExpr() (Stmter, error) {
+func (p *Parser) parsePrimaryExpr() (Stmter, *CustomError) {
 	tk := p.at().Type
 
 	switch tk {
@@ -660,7 +658,7 @@ func (p *Parser) parsePrimaryExpr() (Stmter, error) {
 	case TokenTypeNumber:
 		value, err := strconv.ParseFloat(p.next().Value, 64)
 		if err != nil {
-			return nil, err
+			return nil, newCustomError(err.Error())
 		}
 		return &NumericLiteral{Stmt: &Stmt{kind: NodeTypeNumericLiteral, pos: p.at().Pos}, value: value}, nil
 	case TokenTypeString:
@@ -678,7 +676,7 @@ func (p *Parser) parsePrimaryExpr() (Stmter, error) {
 
 		return value, nil
 	default:
-		return nil, fmt.Errorf("Invalid token type %d %T", p.at().Type, p.at().Value)
+		return nil, newCustomError(fmt.Sprintf("Invalid token type %d %T", p.at().Type, p.at().Value)).addTrace(p.at().Pos)
 	}
 }
 

@@ -1,16 +1,10 @@
 package main
 
-import "fmt"
-
-func (i *Interpreter) formatError(e error, p int) error {
-	return fmt.Errorf(
-		"%s at position: %d",
-		e.Error(),
-		p,
-	)
+func (i *Interpreter) formatError(e *CustomError, p int) *CustomError {
+	return e.addTrace(p)
 }
 
-func (i *Interpreter) evalProgram(program *Program, env *Environments) (RuntimeVal, error) {
+func (i *Interpreter) evalProgram(program *Program, env *Environments) (RuntimeVal, *CustomError) {
 	var lastEvaulatedValue RuntimeVal
 	lastEvaulatedValue = makeNull()
 
@@ -26,7 +20,7 @@ func (i *Interpreter) evalProgram(program *Program, env *Environments) (RuntimeV
 	return lastEvaulatedValue, nil
 }
 
-func (i *Interpreter) evalVarDeclaration(declaration *VariableDeclaration, env *Environments) (RuntimeVal, error) {
+func (i *Interpreter) evalVarDeclaration(declaration *VariableDeclaration, env *Environments) (RuntimeVal, *CustomError) {
 	if declaration.value == nil {
 		return env.declareVar(declaration.identifier, makeNull(), declaration.constant)
 	} else {
@@ -38,7 +32,7 @@ func (i *Interpreter) evalVarDeclaration(declaration *VariableDeclaration, env *
 	}
 }
 
-func (i *Interpreter) evalConditionDeclaration(cnd *ConditionDeclaration, env *Environments) (RuntimeVal, error) {
+func (i *Interpreter) evalConditionDeclaration(cnd *ConditionDeclaration, env *Environments) (RuntimeVal, *CustomError) {
 	lhs, err := i.evaluate(cnd.left, env)
 	if err != nil {
 		return nil, i.formatError(err, cnd.Pos())
@@ -63,7 +57,7 @@ func (i *Interpreter) evalConditionDeclaration(cnd *ConditionDeclaration, env *E
 	return makeNull(), nil
 }
 
-func (i *Interpreter) evalFunctionDeclaration(declaration *FunctionDeclaration, env *Environments) (RuntimeVal, error) {
+func (i *Interpreter) evalFunctionDeclaration(declaration *FunctionDeclaration, env *Environments) (RuntimeVal, *CustomError) {
 	fn := &FnValue{
 		Type:           ValueFunction,
 		name:           declaration.name,

@@ -52,14 +52,14 @@ func testing(env *Environments) {
 	p := newParser()
 	parsed, err := p.produceAST(s)
 	if err != nil {
-		fmt.Println(err)
+		fmt.Println(err.message, err.trace)
 		return
 	}
 
 	i := newInterpreter()
-	_, err = i.evaluate(parsed, env)
-	if err != nil {
-		fmt.Println(err)
+	_, cErr := i.evaluate(parsed, env)
+	if cErr != nil {
+		fmt.Println(cErr.message, cErr.trace)
 		return
 	}
 }
@@ -74,14 +74,14 @@ func propmt(env *Environments) {
 		p := newParser()
 		parsed, err := p.produceAST(s)
 		if err != nil {
-			fmt.Println(err)
+			fmt.Println(err.message, err.trace)
 			continue
 		}
 
 		i := newInterpreter()
-		_, err = i.evaluate(parsed, env)
-		if err != nil {
-			fmt.Println(err)
+		_, cErr := i.evaluate(parsed, env)
+		if cErr != nil {
+			fmt.Println(cErr.message, cErr.trace)
 
 			continue
 		}
@@ -96,16 +96,16 @@ func executeScript(env *Environments) {
 	}
 
 	p := newParser()
-	parsed, err := p.produceAST(s)
-	if err != nil {
-		fmt.Println(err)
+	parsed, pErr := p.produceAST(s)
+	if pErr != nil {
+		fmt.Println(pErr.message, pErr.trace)
 		return
 	}
 
 	i := newInterpreter()
-	_, err = i.evaluate(parsed, env)
-	if err != nil {
-		fmt.Println(err)
+	_, cErr := i.evaluate(parsed, env)
+	if cErr != nil {
+		fmt.Println(cErr.message, cErr.trace)
 		return
 	}
 }

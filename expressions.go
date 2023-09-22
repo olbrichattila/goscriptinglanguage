@@ -2,7 +2,7 @@ package main
 
 import "fmt"
 
-func (i *Interpreter) evalBinaryExpression(binop *BinaryExpession, env *Environments) (RuntimeVal, error) {
+func (i *Interpreter) evalBinaryExpression(binop *BinaryExpession, env *Environments) (RuntimeVal, *CustomError) {
 	lhs, err := i.evaluate(binop.left, env)
 	if err != nil {
 		return nil, i.formatError(err, binop.Pos())
@@ -27,7 +27,7 @@ func (i *Interpreter) evalBinaryExpression(binop *BinaryExpession, env *Environm
 	return makeNull(), nil
 }
 
-func (i *Interpreter) evalIdentifier(ident *Identifier, env *Environments) (RuntimeVal, error) {
+func (i *Interpreter) evalIdentifier(ident *Identifier, env *Environments) (RuntimeVal, *CustomError) {
 	val, err := env.lookupVar(ident.symbol)
 	if err != nil {
 		return nil, i.formatError(err, ident.Pos())
@@ -36,7 +36,7 @@ func (i *Interpreter) evalIdentifier(ident *Identifier, env *Environments) (Runt
 	return val, nil
 }
 
-func (i *Interpreter) evalNumericBinaryExpr(lhs, rhs NumberVal, operator string) (*NumberVal, error) {
+func (i *Interpreter) evalNumericBinaryExpr(lhs, rhs NumberVal, operator string) (*NumberVal, *CustomError) {
 	var result float64
 	switch operator {
 	case "+":
@@ -47,33 +47,33 @@ func (i *Interpreter) evalNumericBinaryExpr(lhs, rhs NumberVal, operator string)
 		result = lhs.Value * rhs.Value
 	case "/":
 		if rhs.Value == 0 {
-			return nil, fmt.Errorf("Division by 0")
+			return nil, newCustomError("Division by 0")
 		}
 		result = lhs.Value / rhs.Value
 	case "%":
 		result = float64(int(lhs.Value) % int(rhs.Value))
 	default:
-		return nil, fmt.Errorf("Operator %s not implemented", operator)
+		return nil, newCustomError(fmt.Sprintf("Operator %s not implemented", operator))
 	}
 
 	return makeNumber(result), nil
 }
 
-func (i *Interpreter) evalStringBinaryExpr(lhs, rhs StringVal, operator string) (*StringVal, error) {
+func (i *Interpreter) evalStringBinaryExpr(lhs, rhs StringVal, operator string) (*StringVal, *CustomError) {
 	var result string
 	switch operator {
 	case "+":
 		result = lhs.Value + rhs.Value
 	default:
-		return nil, fmt.Errorf("Operator %s not implemented", operator)
+		return nil, newCustomError(fmt.Sprintf("Operator %s not implemented", operator))
 	}
 
 	return makeString(result), nil
 }
 
-func (i *Interpreter) evalAssignment(node *AssignmentExpr, env *Environments) (RuntimeVal, error) {
+func (i *Interpreter) evalAssignment(node *AssignmentExpr, env *Environments) (RuntimeVal, *CustomError) {
 	if node.assigne.Kind() != NodeTypeIdentifier {
-		return nil, fmt.Errorf("Invalid LHS iside assignment expression")
+		return nil, newCustomError("Invalid LHS iside assignment expression")
 	}
 
 	varname := node.assigne.(*Identifier).symbol
@@ -84,7 +84,7 @@ func (i *Interpreter) evalAssignment(node *AssignmentExpr, env *Environments) (R
 	return env.assignVar(varname, evaulated)
 }
 
-func (i *Interpreter) evalObjectExpr(node *ObjectLiteral, env *Environments) (RuntimeVal, error) {
+func (i *Interpreter) evalObjectExpr(node *ObjectLiteral, env *Environments) (RuntimeVal, *CustomError) {
 	object := &ObjectVal{Type: ValueObject, properties: make(map[string]RuntimeVal)}
 
 	for _, property := range node.properties {
@@ -107,7 +107,7 @@ func (i *Interpreter) evalObjectExpr(node *ObjectLiteral, env *Environments) (Ru
 	return object, nil
 }
 
-func (i *Interpreter) evalCallExpr(expr *CallExpression, env *Environments) (RuntimeVal, error) {
+func (i *Interpreter) evalCallExpr(expr *CallExpression, env *Environments) (RuntimeVal, *CustomError) {
 	var args []RuntimeVal
 
 	for _, arg := range expr.args {
@@ -152,10 +152,10 @@ func (i *Interpreter) evalCallExpr(expr *CallExpression, env *Environments) (Run
 		return result, nil
 	}
 
-	return nil, fmt.Errorf("cannot call value which is not a function")
+	return nil, newCustomError("cannot call value which is not a function")
 }
 
-func (i *Interpreter) evalNumericConditionExpr(lhs, rhs NumberVal, operator string) (*BoolVal, error) {
+func (i *Interpreter) evalNumericConditionExpr(lhs, rhs NumberVal, operator string) (*BoolVal, *CustomError) {
 	var result bool
 	switch operator {
 	case "=":
@@ -171,13 +171,13 @@ func (i *Interpreter) evalNumericConditionExpr(lhs, rhs NumberVal, operator stri
 	case "!=":
 		result = lhs.Value != rhs.Value
 	default:
-		return nil, fmt.Errorf("Conditional Operator %s not implemented", operator)
+		return nil, newCustomError(fmt.Sprintf("Conditional Operator %s not implemented", operator))
 	}
 
 	return makeBool(result), nil
 }
 
-func (i *Interpreter) evalStringConditionExpr(lhs, rhs StringVal, operator string) (*BoolVal, error) {
+func (i *Interpreter) evalStringConditionExpr(lhs, rhs StringVal, operator string) (*BoolVal, *CustomError) {
 	var result bool
 	switch operator {
 	case "=":
@@ -193,15 +193,15 @@ func (i *Interpreter) evalStringConditionExpr(lhs, rhs StringVal, operator strin
 	case "!=":
 		result = lhs.Value != rhs.Value
 	default:
-		return nil, fmt.Errorf("String Conditional Operator %s not implemented", operator)
+		return nil, newCustomError(fmt.Sprintf("String Conditional Operator %s not implemented", operator))
 	}
 
 	return makeBool(result), nil
 }
 
-func (i *Interpreter) evalIfExpr(ifE *IfExpression, env *Environments) (RuntimeVal, error) {
+func (i *Interpreter) evalIfExpr(ifE *IfExpression, env *Environments) (RuntimeVal, *CustomError) {
 	var cond RuntimeVal
-	var err error
+	var err *CustomError
 	if ifE.condition == nil {
 		cond = makeBool(true)
 	} else {
@@ -226,8 +226,8 @@ func (i *Interpreter) evalIfExpr(ifE *IfExpression, env *Environments) (RuntimeV
 	return result, nil
 }
 
-func (i *Interpreter) evalForExpr(forE *ForExpression, env *Environments) (RuntimeVal, error) {
-	var err error
+func (i *Interpreter) evalForExpr(forE *ForExpression, env *Environments) (RuntimeVal, *CustomError) {
+	var err *CustomError
 	var result RuntimeVal = makeNull()
 
 	if forE.declaration != nil {
