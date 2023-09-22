@@ -59,7 +59,9 @@ func (p *Parser) next() Token {
 func (p *Parser) expect(t TokenType, errMsg string) (*Token, error) {
 	prev := p.next()
 	if prev.Type != t {
-		return nil, fmt.Errorf(errMsg)
+		return nil, fmt.Errorf(
+			fmt.Sprintf("%s at position: %d", errMsg, prev.Pos),
+		)
 	}
 
 	return &prev, nil
@@ -96,7 +98,7 @@ func (p *Parser) parseVarDeclaration() (Stmter, error) {
 		}
 
 		return &VariableDeclaration{
-			Stmt:       &Stmt{kind: NodeTypeVariableDeclaration},
+			Stmt:       &Stmt{kind: NodeTypeVariableDeclaration, pos: p.at().Pos},
 			identifier: token.Value,
 			constant:   false,
 		}, nil
@@ -114,7 +116,7 @@ func (p *Parser) parseVarDeclaration() (Stmter, error) {
 	}
 
 	declaration, err := &VariableDeclaration{
-		Stmt:       &Stmt{kind: NodeTypeVariableDeclaration},
+		Stmt:       &Stmt{kind: NodeTypeVariableDeclaration, pos: p.at().Pos},
 		value:      expr,
 		identifier: token.Value,
 		constant:   isConstant,
@@ -177,7 +179,7 @@ func (p *Parser) parseFunctionDeclaration() (Stmter, error) {
 	}
 
 	return &FunctionDeclaration{
-		Stmt:       &Stmt{kind: NodeTypeFunctionDeclaration},
+		Stmt:       &Stmt{kind: NodeTypeFunctionDeclaration, pos: p.at().Pos},
 		parameters: params,
 		name:       name,
 		body:       body,
@@ -240,7 +242,7 @@ func (p *Parser) parseIfExpression() (Stmter, error) {
 	}
 
 	return &IfExpression{
-		Stmt:           &Stmt{kind: NodeTypeIfExpression},
+		Stmt:           &Stmt{kind: NodeTypeIfExpression, pos: p.at().Pos},
 		condition:      cond,
 		body:           body,
 		elseExpression: elseExpression,
@@ -336,7 +338,7 @@ func (p *Parser) parseForExpression() (Stmter, error) {
 	}
 
 	return &ForExpression{
-		Stmt:                  &Stmt{kind: NodeTypeForExpression},
+		Stmt:                  &Stmt{kind: NodeTypeForExpression, pos: p.at().Pos},
 		declaration:           declaration,
 		condition:             condition,
 		afterCondition:        afterCondition,
@@ -363,7 +365,7 @@ func (p *Parser) parseConditionalExpr() (Stmter, error) {
 		}
 
 		return &ConditionDeclaration{
-			Stmt:     &Stmt{kind: NodeTypeConditionExpression},
+			Stmt:     &Stmt{kind: NodeTypeConditionExpression, pos: p.at().Pos},
 			left:     left,
 			right:    right,
 			operator: operator,
@@ -386,7 +388,7 @@ func (p *Parser) parseAssignmentExpr() (Stmter, error) {
 			return nil, err
 		}
 
-		return &AssignmentExpr{Stmt: &Stmt{kind: NodeTypeAssigmentExpression}, value: value, assigne: left}, nil
+		return &AssignmentExpr{Stmt: &Stmt{kind: NodeTypeAssigmentExpression, pos: p.at().Pos}, value: value, assigne: left}, nil
 
 	}
 
@@ -416,12 +418,12 @@ func (p *Parser) parseObjectExpr() (Stmter, error) {
 
 		if p.at().Type == TokenTypeComma {
 			p.next()
-			properties = append(properties, &Property{Stmt: &Stmt{kind: NodeTypeProperty}, key: key})
+			properties = append(properties, &Property{Stmt: &Stmt{kind: NodeTypeProperty, pos: p.at().Pos}, key: key})
 			continue
 		}
 
 		if p.at().Type == TokenTypeCloseBrace {
-			properties = append(properties, &Property{Stmt: &Stmt{kind: NodeTypeProperty}, key: key})
+			properties = append(properties, &Property{Stmt: &Stmt{kind: NodeTypeProperty, pos: p.at().Pos}, key: key})
 			continue
 		}
 
@@ -435,7 +437,7 @@ func (p *Parser) parseObjectExpr() (Stmter, error) {
 			return nil, err
 		}
 
-		properties = append(properties, &Property{Stmt: &Stmt{kind: NodeTypeProperty}, key: key, value: value})
+		properties = append(properties, &Property{Stmt: &Stmt{kind: NodeTypeProperty, pos: p.at().Pos}, key: key, value: value})
 
 		if p.at().Type != TokenTypeCloseBrace {
 			_, err := p.expect(TokenTypeComma, "Expected comma or closing bracket following property")
@@ -451,7 +453,7 @@ func (p *Parser) parseObjectExpr() (Stmter, error) {
 		return nil, err
 	}
 
-	return &ObjectLiteral{Stmt: &Stmt{kind: NodeTypeObjectLiteral}, properties: properties}, nil
+	return &ObjectLiteral{Stmt: &Stmt{kind: NodeTypeObjectLiteral, pos: p.at().Pos}, properties: properties}, nil
 }
 
 func (p *Parser) parseAdditiveExpr() (Stmter, error) {
@@ -469,7 +471,7 @@ func (p *Parser) parseAdditiveExpr() (Stmter, error) {
 				return nil, err
 			}
 			left = &BinaryExpession{
-				Stmt:     &Stmt{kind: NodeTypeBinaryExpession},
+				Stmt:     &Stmt{kind: NodeTypeBinaryExpession, pos: p.at().Pos},
 				left:     left,
 				right:    right,
 				operator: operator,
@@ -497,7 +499,7 @@ func (p *Parser) parseMultiplicativeExpr() (Stmter, error) {
 				return nil, err
 			}
 			left = &BinaryExpession{
-				Stmt:     &Stmt{kind: NodeTypeBinaryExpession},
+				Stmt:     &Stmt{kind: NodeTypeBinaryExpession, pos: p.at().Pos},
 				left:     left,
 				right:    right,
 				operator: operator,
@@ -531,7 +533,7 @@ func (p *Parser) parseCallExpr(caller Stmter) (Stmter, error) {
 	}
 
 	callExpr := &CallExpression{
-		Stmt:   &Stmt{kind: NodeTypeCallExpression},
+		Stmt:   &Stmt{kind: NodeTypeCallExpression, pos: p.at().Pos},
 		caller: caller,
 		args:   args,
 	}
@@ -590,7 +592,7 @@ func (p *Parser) parseMemberExpr() (Stmter, error) {
 		}
 
 		object = &MemberExpression{
-			Stmt:     &Stmt{kind: NodeTypeMemberExpression},
+			Stmt:     &Stmt{kind: NodeTypeMemberExpression, pos: p.at().Pos},
 			object:   object,
 			propert:  property,
 			computed: computed,
@@ -654,15 +656,15 @@ func (p *Parser) parsePrimaryExpr() (Stmter, error) {
 
 	switch tk {
 	case TokenTypeIdentifier:
-		return &Identifier{Stmt: &Stmt{kind: NodeTypeIdentifier}, symbol: p.next().Value}, nil
+		return &Identifier{Stmt: &Stmt{kind: NodeTypeIdentifier, pos: p.at().Pos}, symbol: p.next().Value}, nil
 	case TokenTypeNumber:
 		value, err := strconv.ParseFloat(p.next().Value, 64)
 		if err != nil {
 			return nil, err
 		}
-		return &NumericLiteral{Stmt: &Stmt{kind: NodeTypeNumericLiteral}, value: value}, nil
+		return &NumericLiteral{Stmt: &Stmt{kind: NodeTypeNumericLiteral, pos: p.at().Pos}, value: value}, nil
 	case TokenTypeString:
-		return &StringLiteral{Stmt: &Stmt{kind: NodeTypeStringLIteral}, value: p.next().Value}, nil
+		return &StringLiteral{Stmt: &Stmt{kind: NodeTypeStringLIteral, pos: p.at().Pos}, value: p.next().Value}, nil
 	case TokenTypeOpenParen:
 		p.next()
 		value, err := p.parseExpr()

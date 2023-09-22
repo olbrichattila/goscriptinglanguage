@@ -1,5 +1,15 @@
 package main
 
+import "fmt"
+
+func (i *Interpreter) formatError(e error, p int) error {
+	return fmt.Errorf(
+		"%s at position: %d",
+		e.Error(),
+		p,
+	)
+}
+
 func (i *Interpreter) evalProgram(program *Program, env *Environments) (RuntimeVal, error) {
 	var lastEvaulatedValue RuntimeVal
 	lastEvaulatedValue = makeNull()
@@ -7,7 +17,7 @@ func (i *Interpreter) evalProgram(program *Program, env *Environments) (RuntimeV
 	for _, statements := range program.body {
 		evaluated, err := i.evaluate(statements, env)
 		if err != nil {
-			return nil, err
+			return nil, i.formatError(err, program.Pos())
 		}
 
 		lastEvaulatedValue = evaluated
@@ -22,7 +32,7 @@ func (i *Interpreter) evalVarDeclaration(declaration *VariableDeclaration, env *
 	} else {
 		value, err := i.evaluate(declaration.value, env)
 		if err != nil {
-			return nil, err
+			return nil, i.formatError(err, declaration.Pos())
 		}
 		return env.declareVar(declaration.identifier, value, declaration.constant)
 	}
@@ -31,11 +41,11 @@ func (i *Interpreter) evalVarDeclaration(declaration *VariableDeclaration, env *
 func (i *Interpreter) evalConditionDeclaration(cnd *ConditionDeclaration, env *Environments) (RuntimeVal, error) {
 	lhs, err := i.evaluate(cnd.left, env)
 	if err != nil {
-		return nil, err
+		return nil, i.formatError(err, cnd.Pos())
 	}
 	rhs, err := i.evaluate(cnd.right, env)
 	if err != nil {
-		return nil, err
+		return nil, i.formatError(err, cnd.Pos())
 	}
 
 	lhsVal, okLhs := lhs.(*NumberVal)

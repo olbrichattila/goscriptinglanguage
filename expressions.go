@@ -5,11 +5,11 @@ import "fmt"
 func (i *Interpreter) evalBinaryExpression(binop *BinaryExpession, env *Environments) (RuntimeVal, error) {
 	lhs, err := i.evaluate(binop.left, env)
 	if err != nil {
-		return nil, err
+		return nil, i.formatError(err, binop.Pos())
 	}
 	rhs, err := i.evaluate(binop.right, env)
 	if err != nil {
-		return nil, err
+		return nil, i.formatError(err, binop.Pos())
 	}
 
 	lhsVal, okLhs := lhs.(*NumberVal)
@@ -30,7 +30,7 @@ func (i *Interpreter) evalBinaryExpression(binop *BinaryExpession, env *Environm
 func (i *Interpreter) evalIdentifier(ident *Identifier, env *Environments) (RuntimeVal, error) {
 	val, err := env.lookupVar(ident.symbol)
 	if err != nil {
-		return nil, err
+		return nil, i.formatError(err, ident.Pos())
 	}
 
 	return val, nil
@@ -79,7 +79,7 @@ func (i *Interpreter) evalAssignment(node *AssignmentExpr, env *Environments) (R
 	varname := node.assigne.(*Identifier).symbol
 	evaulated, err := i.evaluate(node.value, env)
 	if err != nil {
-		return nil, err
+		return nil, i.formatError(err, node.Pos())
 	}
 	return env.assignVar(varname, evaulated)
 }
@@ -91,14 +91,14 @@ func (i *Interpreter) evalObjectExpr(node *ObjectLiteral, env *Environments) (Ru
 		if property.value == nil {
 			runtimeVal, err := env.lookupVar(property.key)
 			if err != nil {
-				return nil, err
+				return nil, i.formatError(err, node.Pos())
 			}
 			object.properties[property.key] = runtimeVal
 		} else {
 
 			runtimeVal, err := i.evaluate(property.value, env)
 			if err != nil {
-				return nil, err
+				return nil, i.formatError(err, node.Pos())
 			}
 			object.properties[property.key] = runtimeVal
 		}
@@ -113,14 +113,14 @@ func (i *Interpreter) evalCallExpr(expr *CallExpression, env *Environments) (Run
 	for _, arg := range expr.args {
 		ev, err := i.evaluate(*arg, env)
 		if err != nil {
-			return nil, err
+			return nil, i.formatError(err, expr.Pos())
 		}
 		args = append(args, ev)
 	}
 
 	f, err := i.evaluate(expr.caller, env)
 	if err != nil {
-		return nil, err
+		return nil, i.formatError(err, expr.Pos())
 	}
 
 	if fn, ok := f.(*NativeFnValue); ok {
@@ -130,14 +130,14 @@ func (i *Interpreter) evalCallExpr(expr *CallExpression, env *Environments) (Run
 	if fnc, ok := f.(*FnValue); ok {
 		scope, err := newEnvironments(fnc.declarationEnv)
 		if err != nil {
-			return nil, err
+			return nil, i.formatError(err, expr.Pos())
 		}
 
-		for i, varName := range fnc.paramaters {
+		for ind, varName := range fnc.paramaters {
 			// @TODO check the bouds here, verify the airity of the function
-			_, err := scope.declareVar(varName, args[i], false)
+			_, err := scope.declareVar(varName, args[ind], false)
 			if err != nil {
-				return nil, err
+				return nil, i.formatError(err, expr.Pos())
 			}
 		}
 
@@ -145,7 +145,7 @@ func (i *Interpreter) evalCallExpr(expr *CallExpression, env *Environments) (Run
 		for _, statement := range fnc.body {
 			result, err = i.evaluate(statement, scope)
 			if err != nil {
-				return nil, err
+				return nil, i.formatError(err, expr.Pos())
 			}
 		}
 
@@ -207,7 +207,7 @@ func (i *Interpreter) evalIfExpr(ifE *IfExpression, env *Environments) (RuntimeV
 	} else {
 		cond, err = i.evaluate(ifE.condition, env)
 		if err != nil {
-			return nil, err
+			return nil, i.formatError(err, ifE.Pos())
 		}
 	}
 
@@ -216,7 +216,7 @@ func (i *Interpreter) evalIfExpr(ifE *IfExpression, env *Environments) (RuntimeV
 		for _, statement := range ifE.body {
 			result, err = i.evaluate(statement, env)
 			if err != nil {
-				return nil, err
+				return nil, i.formatError(err, ifE.Pos())
 			}
 		}
 	} else if ifE.elseExpression != nil {
@@ -233,7 +233,7 @@ func (i *Interpreter) evalForExpr(forE *ForExpression, env *Environments) (Runti
 	if forE.declaration != nil {
 		_, err := i.evaluate(forE.declaration, env)
 		if err != nil {
-			return nil, err
+			return nil, i.formatError(err, forE.Pos())
 		}
 	}
 
@@ -241,7 +241,7 @@ func (i *Interpreter) evalForExpr(forE *ForExpression, env *Environments) (Runti
 		if forE.condition != nil {
 			cond, err := i.evaluate(forE.condition, env)
 			if err != nil {
-				return nil, err
+				return nil, i.formatError(err, forE.Pos())
 			}
 
 			if cond.(*BoolVal).Value == false {
@@ -252,14 +252,14 @@ func (i *Interpreter) evalForExpr(forE *ForExpression, env *Environments) (Runti
 		for _, statement := range forE.body {
 			result, err = i.evaluate(statement, env)
 			if err != nil {
-				return nil, err
+				return nil, i.formatError(err, forE.Pos())
 			}
 		}
 
 		if forE.afterCondition != nil {
 			cond, err := i.evaluate(forE.afterCondition, env)
 			if err != nil {
-				return nil, err
+				return nil, i.formatError(err, forE.Pos())
 			}
 
 			if cond.(*BoolVal).Value == false {

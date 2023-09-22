@@ -1,15 +1,15 @@
-Add line and character number from source code to Token and carry over to Ast node to be able to provide better error message
+Change error to custom error with trace, and as it drills down to the source level,
+create a function which will display the line nr and character pos with an example bit of code
+for each trace if there are more
 
-Add len()
-Add substr()
-Add sleep()
+Add file read and write functions
 
 Add Switch case
 Add read from str input
 Add db functions
 Add date functions
 Add time functions
-Add file read and write functions
+
 Add exec() -> operating system level
 Add classes
 Fix: This AST node has not yet been setup for interpretation MemberExpression (expr.gl)

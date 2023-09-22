@@ -27,14 +27,20 @@ const (
 
 type Stmter interface {
 	Kind() NodeType
+	Pos() int
 }
 
 type Stmt struct {
 	kind NodeType
+	pos  int
 }
 
 func (s *Stmt) Kind() NodeType {
 	return s.kind
+}
+
+func (s *Stmt) Pos() int {
+	return s.pos
 }
 
 type Program struct {

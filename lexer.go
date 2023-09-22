@@ -43,6 +43,7 @@ const (
 type Token struct {
 	Value string
 	Type  TokenType
+	Pos   int
 }
 
 type Tokenizer struct {
@@ -76,22 +77,22 @@ func (t *Tokenizer) tokenize(sourceCode string) ([]Token, error) {
 
 		switch src[i] {
 		case "(":
-			tokens = append(tokens, Token{Type: TokenTypeOpenParen})
+			tokens = append(tokens, Token{Type: TokenTypeOpenParen, Pos: i})
 			i++
 		case ")":
-			tokens = append(tokens, Token{Type: TokenTypeCloseParen})
+			tokens = append(tokens, Token{Type: TokenTypeCloseParen, Pos: i})
 			i++
 		case "{":
-			tokens = append(tokens, Token{Type: TokenTypeOpenBrace})
+			tokens = append(tokens, Token{Type: TokenTypeOpenBrace, Pos: i})
 			i++
 		case "}":
-			tokens = append(tokens, Token{Type: TokenTypeCloseBrace})
+			tokens = append(tokens, Token{Type: TokenTypeCloseBrace, Pos: i})
 			i++
 		case "[":
-			tokens = append(tokens, Token{Type: TokenTypeOpenBracket})
+			tokens = append(tokens, Token{Type: TokenTypeOpenBracket, Pos: i})
 			i++
 		case "]":
-			tokens = append(tokens, Token{Type: TokenTypeCloseBracket})
+			tokens = append(tokens, Token{Type: TokenTypeCloseBracket, Pos: i})
 			i++
 		case "+", "-", "/", "*", "%":
 			if i < srcLen-1 && src[i+1] == "/" {
@@ -102,55 +103,55 @@ func (t *Tokenizer) tokenize(sourceCode string) ([]Token, error) {
 					i++
 				}
 			} else {
-				tokens = append(tokens, Token{Type: TokenTypeBinaryOperator, Value: src[i]})
+				tokens = append(tokens, Token{Type: TokenTypeBinaryOperator, Value: src[i], Pos: i})
 				i++
 			}
 		case "=":
 			if i < srcLen-1 && src[i+1] == "=" {
-				tokens = append(tokens, Token{Type: TokenTypeDoubeEqual, Value: "="})
+				tokens = append(tokens, Token{Type: TokenTypeDoubeEqual, Value: "=", Pos: i})
 				i++
 			} else {
-				tokens = append(tokens, Token{Type: TokenTypeEquals})
+				tokens = append(tokens, Token{Type: TokenTypeEquals, Pos: i})
 			}
 			i++
 		case ";":
-			tokens = append(tokens, Token{Type: TokenTypeSemicolon})
+			tokens = append(tokens, Token{Type: TokenTypeSemicolon, Pos: i})
 			i++
 		case ":":
-			tokens = append(tokens, Token{Type: TokenTypeColon})
+			tokens = append(tokens, Token{Type: TokenTypeColon, Pos: i})
 			i++
 		case ",":
-			tokens = append(tokens, Token{Type: TokenTypeComma})
+			tokens = append(tokens, Token{Type: TokenTypeComma, Pos: i})
 			i++
 		case ".":
-			tokens = append(tokens, Token{Type: TokenTypeDot})
+			tokens = append(tokens, Token{Type: TokenTypeDot, Pos: i})
 			i++
 		case "<":
 			if i < srcLen-1 && src[i+1] == "=" {
-				tokens = append(tokens, Token{Type: TokenTypeSmallerEqual, Value: "<="})
+				tokens = append(tokens, Token{Type: TokenTypeSmallerEqual, Value: "<=", Pos: i})
 				i++
 			} else if i < srcLen-1 && src[i+1] == ">" {
-				tokens = append(tokens, Token{Type: TokenTypeNotEqual, Value: "!="})
+				tokens = append(tokens, Token{Type: TokenTypeNotEqual, Value: "!=", Pos: i})
 				i++
 			} else {
-				tokens = append(tokens, Token{Type: TokenTypeSmaller, Value: "<"})
+				tokens = append(tokens, Token{Type: TokenTypeSmaller, Value: "<", Pos: i})
 			}
 			i++
 		case "!":
 			if i < srcLen-1 && src[i+1] == "=" {
-				tokens = append(tokens, Token{Type: TokenTypeNotEqual, Value: "!="})
+				tokens = append(tokens, Token{Type: TokenTypeNotEqual, Value: "!=", Pos: i})
 				i++
 			} else {
 				// This is not yet pharsed
-				tokens = append(tokens, Token{Type: TokenTypeNot, Value: "!"})
+				tokens = append(tokens, Token{Type: TokenTypeNot, Value: "!", Pos: i})
 			}
 			i++
 		case ">":
 			if i < srcLen-1 && src[i+1] == "=" {
-				tokens = append(tokens, Token{Type: TokenTypeGreaterEqual, Value: ">="})
+				tokens = append(tokens, Token{Type: TokenTypeGreaterEqual, Value: ">=", Pos: i})
 				i++
 			} else {
-				tokens = append(tokens, Token{Type: TokenTypeGreater, Value: ">"})
+				tokens = append(tokens, Token{Type: TokenTypeGreater, Value: ">", Pos: i})
 			}
 			i++
 		default:
@@ -167,7 +168,7 @@ func (t *Tokenizer) tokenize(sourceCode string) ([]Token, error) {
 		}
 	}
 
-	tokens = append(tokens, Token{Type: TokenTypeEOF, Value: "EndOfFile"})
+	tokens = append(tokens, Token{Type: TokenTypeEOF, Value: "EndOfFile", Pos: i})
 
 	return tokens, nil
 }
@@ -183,7 +184,7 @@ func (t *Tokenizer) tokenizeComplex(src []string, i int) (*Token, int, error) {
 			i++
 		}
 
-		return &Token{Type: TokenTypeNumber, Value: num}, i, nil
+		return &Token{Type: TokenTypeNumber, Value: num, Pos: i}, i, nil
 	}
 
 	if t.isAlpha(src[i]) {
@@ -197,10 +198,10 @@ func (t *Tokenizer) tokenizeComplex(src []string, i int) (*Token, int, error) {
 		}
 
 		if keywordTokenType, exist := t.keywords[alpha]; exist {
-			return &Token{Type: keywordTokenType, Value: alpha}, i, nil
+			return &Token{Type: keywordTokenType, Value: alpha, Pos: i}, i, nil
 		}
 
-		return &Token{Type: TokenTypeIdentifier, Value: alpha}, i, nil
+		return &Token{Type: TokenTypeIdentifier, Value: alpha, Pos: i}, i, nil
 	}
 
 	if src[i] == "\"" {
@@ -228,7 +229,7 @@ func (t *Tokenizer) tokenizeComplex(src []string, i int) (*Token, int, error) {
 			i++
 		}
 
-		return &Token{Type: TokenTypeString, Value: str}, i, nil
+		return &Token{Type: TokenTypeString, Value: str, Pos: i}, i, nil
 	}
 
 	if t.isSkippable(src[i]) {
