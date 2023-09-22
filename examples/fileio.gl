@@ -1,0 +1,7 @@
+if (fileWrite("test.txt", "This is the test file content")) {
+    println("File written succesfully")
+}
+
+let content = fileRead("test.txt");
+
+println("The content is", content)

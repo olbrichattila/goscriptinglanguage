@@ -3,6 +3,7 @@ package main
 import (
 	"bufio"
 	"fmt"
+	"io/ioutil"
 	"math"
 	"math/rand"
 	"os"
@@ -153,4 +154,34 @@ func ntSleep(args []RuntimeVal, env *Environments) RuntimeVal {
 	}
 
 	return makeNull()
+}
+
+func ntFileRead(args []RuntimeVal, env *Environments) RuntimeVal {
+	if fileName, ok := args[0].(*StringVal); ok {
+		fileData, err := ioutil.ReadFile(fileName.Value)
+		if err != nil {
+			return makeBool(false)
+		}
+		return makeString(string(fileData))
+	}
+
+	return makeBool(false)
+}
+
+func ntFileWrite(args []RuntimeVal, env *Environments) RuntimeVal {
+	if len(args) < 2 {
+		return makeBool(false)
+	}
+	if fileName, ok := args[0].(*StringVal); ok {
+		if fileContent, ok := args[1].(*StringVal); ok {
+			data := []byte(fileContent.Value)
+			err := ioutil.WriteFile(fileName.Value, data, 0644)
+			if err != nil {
+				return makeBool(false)
+			}
+			return makeBool(true)
+		}
+	}
+
+	return makeBool(false)
 }

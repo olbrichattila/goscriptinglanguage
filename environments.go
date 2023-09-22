@@ -154,5 +154,15 @@ func (e *Environments) declareDefaultEnv() error {
 		return err
 	}
 
+	_, err = e.declareVar("fileRead", makeNativeFn(ntFileRead), true)
+	if err != nil {
+		return err
+	}
+
+	_, err = e.declareVar("fileWrite", makeNativeFn(ntFileWrite), true)
+	if err != nil {
+		return err
+	}
+
 	return nil
 }

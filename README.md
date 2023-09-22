@@ -91,6 +91,8 @@ strToNum("53")
 input()
 round(num, decimals)
 rand(10) // parameter is optional, 0 to range
+fileWrite(fileName, content)
+fileRead(filename)
 
 ```
 ### Example of num to str
@@ -113,6 +115,17 @@ for (let i = 0; i < 100; i = i + 1) {
 print("What is your name? ")
 let name = input();
 print("Hello " + name)
+```
+
+## Example of file read, write
+```
+if (fileWrite("test.txt", "This is the test file content")) {
+    println("File written succesfully")
+}
+
+let content = fileRead("test.txt");
+
+println("The content is", content)
 ```
 
 ### User defined functions Functions, closures with variable scopes
