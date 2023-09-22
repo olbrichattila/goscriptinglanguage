@@ -11,10 +11,13 @@ x = "Hello World"
 let l = len(x);
 
 for (let i = 0;i < l;i = i + 1) {
-     println(substr(x, i, i+1))
+     print(substr(x, i, i+1))
 }
 
-for (let y = l - 1;y > 0;y = y - 1) {
-    println(substr(x, y, y + 1))
+println("")
+
+for (let y = l - 1;y >= 0;y = y - 1) {
+    print(substr(x, y, y + 1))
 }
 
+println("")

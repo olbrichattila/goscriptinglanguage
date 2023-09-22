@@ -1,7 +1,7 @@
 let z = 35;
 fn add (x, y) {
     let result = x + y;
-    print(result)
+    println(result)
 
     result
 }
@@ -11,7 +11,7 @@ fn sub () {
     let y = 20;
     fn add (x, y) {
         let result = x + y;
-        print(result)
+        println(result)
 
         result
     }
@@ -22,14 +22,14 @@ fn sub () {
 
 const result = add(10, 4);
 
-print(result)
-print(result)
-print(result)
+println(result)
+println(result)
+println(result)
 
-print(add(5, 3))
-print(add(2, 7))
-print(add(5, 3))
-print(add(1, z))
+println(add(5, 3))
+println(add(2, 7))
+println(add(5, 3))
+println(add(1, z))
 
 
-print(sub())
+println(sub())

@@ -162,6 +162,7 @@ func displayError(err *CustomError, src *string) {
 			}
 
 			if i == tr {
+				fmt.Println(i, tr, l)
 				startPos := i - 3
 				if startPos < 0 {
 					startPos = 0

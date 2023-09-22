@@ -1,21 +1,21 @@
 const a = "Arnold";
 const b = "Bruno";
 
-print(a + " " + b)
+println(a + " " + b)
 let c = 2;
 let d = 5;
 
-print(c + d)
-print ((a < b))
-print ((a > b))
-print ((a == b))
-print ((a != b))
-print ((a <= b))
-print ((a >= b))
+println(c + d)
+println ((a < b))
+println ((a > b))
+println ((a == b))
+println ((a != b))
+println ((a <= b))
+println ((a >= b))
 
-print ((c < d))
-print ((c > d))
-print ((c == d))
-print ((c != d))
-print ((c <= d))
-print ((c >= d))
+println ((c < d))
+println ((c > d))
+println ((c == d))
+println ((c != d))
+println ((c <= d))
+println ((c >= d))

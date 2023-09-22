@@ -1,23 +1,23 @@
 let x;
 x = (1 == 1)
-print(x)
+println(x)
 
 x = (1 > 1)
-print(x)
+println(x)
 
 x = (1 < 1)
-print(x)
+println(x)
 
 x = (5 + 5 == 10)
-print(x)
+println(x)
 
 const foo = 51;
 x = (foo == 51)
-print(x)
+println(x)
 
 x = (foo -1 == 50)
-print(x)
+println(x)
 
 x = (foo > 0)
-print(x)
+println(x)
 x
