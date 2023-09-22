@@ -52,14 +52,14 @@ func testing(env *Environments) {
 	p := newParser()
 	parsed, err := p.produceAST(s)
 	if err != nil {
-		fmt.Println(err.message, err.trace)
+		displayError(err, &s)
 		return
 	}
 
 	i := newInterpreter()
 	_, cErr := i.evaluate(parsed, env)
 	if cErr != nil {
-		fmt.Println(cErr.message, cErr.trace)
+		displayError(cErr, &s)
 		return
 	}
 }
@@ -74,15 +74,14 @@ func propmt(env *Environments) {
 		p := newParser()
 		parsed, err := p.produceAST(s)
 		if err != nil {
-			fmt.Println(err.message, err.trace)
+			displayError(err, &s)
 			continue
 		}
 
 		i := newInterpreter()
 		_, cErr := i.evaluate(parsed, env)
 		if cErr != nil {
-			fmt.Println(cErr.message, cErr.trace)
-
+			displayError(cErr, &s)
 			continue
 		}
 	}
@@ -98,14 +97,14 @@ func executeScript(env *Environments) {
 	p := newParser()
 	parsed, pErr := p.produceAST(s)
 	if pErr != nil {
-		fmt.Println(pErr.message, pErr.trace)
+		displayError(pErr, &s)
 		return
 	}
 
 	i := newInterpreter()
 	_, cErr := i.evaluate(parsed, env)
 	if cErr != nil {
-		fmt.Println(cErr.message, cErr.trace)
+		displayError(cErr, &s)
 		return
 	}
 }
@@ -138,4 +137,62 @@ func prettyPrint(p *Program) {
 
 func displayStruct(s Stmter) {
 	fmt.Printf("%s\n", s)
+}
+
+func displayError(err *CustomError, src *string) {
+	// @todo refactor this, maybe separat struct
+	fmt.Println(err)
+	red := "\033[31m"
+	green := "\033[32m"
+	reset := "\033[0m"
+
+	fmt.Println()
+	fmt.Println(red + err.message + reset)
+	l := len(*src)
+	str := *src
+
+	for _, tr := range err.trace {
+		line := 1
+		pos := 1
+		for i, c := range str {
+			s := string(c)
+			if s == "\n" {
+				line++
+				pos = 1
+			}
+
+			if i == tr {
+				startPos := i - 3
+				if startPos < 0 {
+					startPos = 0
+				}
+
+				endPos := i + 3
+				if endPos > l {
+					endPos = l
+				}
+
+				fmt.Printf(
+					green+"Error at line (%d), position (%d) near at: `%s`\n"+reset,
+					line,
+					pos,
+					str[startPos:endPos],
+				)
+			}
+		}
+
+		if tr == l {
+			startPos := l - 6
+			if startPos < 0 {
+				startPos = 0
+			}
+
+			fmt.Printf(
+				green+"Error at the end of the file near at: `%s`\n"+reset,
+				str[startPos:l],
+			)
+		}
+	}
+
+	fmt.Println()
 }

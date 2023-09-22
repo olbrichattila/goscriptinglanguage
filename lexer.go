@@ -239,9 +239,7 @@ func (t *Tokenizer) tokenizeComplex(src []string, i int) (*Token, int, *CustomEr
 		return nil, i, nil
 	}
 
-	rErr := newCustomError(fmt.Sprintf("Uncrecoginized charecter found in source %s", src[i]))
-	rErr.addTrace(i)
-	return nil, i, rErr
+	return nil, i, newCustomError(fmt.Sprintf("Uncrecoginized charecter found in source %s", src[i])).addTrace(i)
 }
 
 func (t *Tokenizer) isSkippable(s string) bool {
