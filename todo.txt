@@ -1,12 +1,12 @@
 Add line and character number from source code to Token and carry over to Ast node to be able to provide better error message
+
 Add len()
 Add substr()
-Add do (cond) {}
-Add do {}(cond)
+Add sleep()
+
 Add Switch case
 Add read from str input
 Add db functions
-Add sleep()
 Add date functions
 Add time functions
 Add file read and write functions

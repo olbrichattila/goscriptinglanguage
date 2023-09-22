@@ -1,0 +1,20 @@
+let x;
+x = len("Hello World")
+println("Length: " + numToStr(x))
+
+x = substr("Hello World", 2, 7)
+println(x,"")
+
+sleep(500)
+
+x = "Hello World"
+let l = len(x);
+
+for (let i = 0;i < l;i = i + 1) {
+     println(substr(x, i, i+1))
+}
+
+for (let y = l - 1;y > 0;y = y - 1) {
+    println(substr(x, y, y + 1))
+}
+

@@ -62,7 +62,7 @@ x = x + 1
 
 ```
 
-### Definion of complex objects:
+### Definition of complex objects:
 
 Exampe:
 ```

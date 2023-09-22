@@ -268,7 +268,7 @@ func (p *Parser) parseForExpression() (Stmter, error) {
 			}
 		}
 
-		if parCount == 2 {
+		if parCount > 0 {
 			declaration, err = p.parseVarDeclaration()
 			if err != nil {
 				return nil, err
@@ -290,7 +290,7 @@ func (p *Parser) parseForExpression() (Stmter, error) {
 			}
 		}
 
-		_, err = p.expect(TokenTypeCloseParen, "Close parenthesis expected after if statement conditions")
+		_, err := p.expect(TokenTypeCloseParen, "Close parenthesis expected after for statement conditions")
 		if err != nil {
 			return nil, err
 		}

@@ -119,3 +119,38 @@ func ntRand(args []RuntimeVal, env *Environments) RuntimeVal {
 
 	return makeNumber(float64(rand.Intn(rng)))
 }
+
+func ntLen(args []RuntimeVal, env *Environments) RuntimeVal {
+	if s, ok := args[0].(*StringVal); ok {
+		n := len(s.Value)
+		return makeNumber(float64(n))
+	}
+
+	return makeNull()
+}
+
+func ntSubstr(args []RuntimeVal, env *Environments) RuntimeVal {
+
+	if len(args) < 3 {
+		return makeNull()
+	}
+
+	if s, ok := args[0].(*StringVal); ok {
+		if p1, ok := args[1].(*NumberVal); ok {
+			if p2, ok := args[2].(*NumberVal); ok {
+				return makeString(s.Value[int(p1.Value):int(p2.Value)])
+			}
+		}
+	}
+
+	return makeNull()
+}
+
+func ntSleep(args []RuntimeVal, env *Environments) RuntimeVal {
+	if d, ok := args[0].(*NumberVal); ok {
+		duration := time.Duration(d.Value) * time.Microsecond
+		time.Sleep(duration * time.Microsecond)
+	}
+
+	return makeNull()
+}

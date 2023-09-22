@@ -5,7 +5,7 @@ let min = 0;
 let max = 100;
 let tip;
 let answer;
-for (var i = 0; i<1; i = i + 0) {
+for {
     tip = round(min + (max - min) / 2)
     println("My tip is " + numToStr(tip) + " (b) for bigger, (s) for smaller, (o) for ok")
     answer = input()
@@ -19,4 +19,4 @@ for (var i = 0; i<1; i = i + 0) {
     } else {
         println("Incorrect letter, try again")
     }
-}
+}(answer != "o")

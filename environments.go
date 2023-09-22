@@ -139,5 +139,20 @@ func (e *Environments) declareDefaultEnv() error {
 		return err
 	}
 
+	_, err = e.declareVar("len", makeNativeFn(ntLen), true)
+	if err != nil {
+		return err
+	}
+
+	_, err = e.declareVar("substr", makeNativeFn(ntSubstr), true)
+	if err != nil {
+		return err
+	}
+
+	_, err = e.declareVar("sleep", makeNativeFn(ntSleep), true)
+	if err != nil {
+		return err
+	}
+
 	return nil
 }

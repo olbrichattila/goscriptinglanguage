@@ -249,10 +249,6 @@ func (i *Interpreter) evalForExpr(forE *ForExpression, env *Environments) (Runti
 			}
 		}
 
-		if forE.incrementalExpression != nil {
-			_, err = i.evaluate(forE.incrementalExpression, env)
-		}
-
 		for _, statement := range forE.body {
 			result, err = i.evaluate(statement, env)
 			if err != nil {
@@ -269,6 +265,10 @@ func (i *Interpreter) evalForExpr(forE *ForExpression, env *Environments) (Runti
 			if cond.(*BoolVal).Value == false {
 				break
 			}
+		}
+
+		if forE.incrementalExpression != nil {
+			_, err = i.evaluate(forE.incrementalExpression, env)
 		}
 	}
 
