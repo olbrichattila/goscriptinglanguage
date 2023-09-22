@@ -248,40 +248,59 @@ func (p *Parser) parseIfExpression() (Stmter, error) {
 }
 
 func (p *Parser) parseForExpression() (Stmter, error) {
+	// @TODO refactor to decrease complexity, factor out syntax variations phraser
+	var err error
+	var afterCondition, declaration, condition, incrementalExpression Stmter
 	p.next()
-	_, err := p.expect(TokenTypeOpenParen, "Open parenthesis expected after for statement")
-	if err != nil {
-		return nil, err
-	}
 
-	declaration, err := p.parseVarDeclaration()
-	if err != nil {
-		return nil, err
-	}
+	if p.at().Type != TokenTypeOpenBrace {
+		_, err = p.expect(TokenTypeOpenParen, "Open parenthesis expected after for statement")
+		if err != nil {
+			return nil, err
+		}
 
-	condition, err := p.parseConditionalExpr()
-	if err != nil {
-		return nil, err
-	}
+		parCount := p.countFor(TokenTypeSemicolon)
 
-	_, err = p.expect(TokenTypeSemicolon, "Semicolon expected after for variable condition")
-	if err != nil {
-		return nil, err
-	}
+		if parCount == 0 {
+			condition, err = p.parseConditionalExpr()
+			if err != nil {
+				return nil, err
+			}
+		}
 
-	incrementalExpression, err := p.parseExpr()
-	if err != nil {
-		return nil, err
-	}
+		if parCount == 2 {
+			declaration, err = p.parseVarDeclaration()
+			if err != nil {
+				return nil, err
+			}
 
-	_, err = p.expect(TokenTypeCloseParen, "Close parenthesis expected after if statement conditions")
-	if err != nil {
-		return nil, err
-	}
+			condition, err = p.parseConditionalExpr()
+			if err != nil {
+				return nil, err
+			}
 
-	_, err = p.expect(TokenTypeOpenBrace, "Expected open brace after if condition")
-	if err != nil {
-		return nil, err
+			_, err = p.expect(TokenTypeSemicolon, "Semicolon expected after for variable condition")
+			if err != nil {
+				return nil, err
+			}
+
+			incrementalExpression, err = p.parseExpr()
+			if err != nil {
+				return nil, err
+			}
+		}
+
+		_, err = p.expect(TokenTypeCloseParen, "Close parenthesis expected after if statement conditions")
+		if err != nil {
+			return nil, err
+		}
+
+		_, err = p.expect(TokenTypeOpenBrace, "Expected open brace after if condition")
+		if err != nil {
+			return nil, err
+		}
+	} else {
+		p.next()
 	}
 
 	var body []Stmter
@@ -303,10 +322,24 @@ func (p *Parser) parseForExpression() (Stmter, error) {
 		return nil, err
 	}
 
+	if p.at().Type == TokenTypeOpenParen {
+		p.next()
+		afterCondition, err = p.parseConditionalExpr()
+		if err != nil {
+			return nil, err
+		}
+
+		_, err = p.expect(TokenTypeCloseParen, "Close parenthesis expected after if statement closing conditions")
+		if err != nil {
+			return nil, err
+		}
+	}
+
 	return &ForExpression{
 		Stmt:                  &Stmt{kind: NodeTypeForExpression},
 		declaration:           declaration,
 		condition:             condition,
+		afterCondition:        afterCondition,
 		incrementalExpression: incrementalExpression,
 		body:                  body,
 	}, nil
@@ -392,7 +425,7 @@ func (p *Parser) parseObjectExpr() (Stmter, error) {
 			continue
 		}
 
-		_, err = p.expect(TokenTypeColon, "Missing colon followint  in object expression")
+		_, err = p.expect(TokenTypeColon, "Missing colon following in object expression")
 		if err != nil {
 			return nil, err
 		}
@@ -645,4 +678,23 @@ func (p *Parser) parsePrimaryExpr() (Stmter, error) {
 	default:
 		return nil, fmt.Errorf("Invalid token type %d %T", p.at().Type, p.at().Value)
 	}
+}
+
+func (p *Parser) countFor(divider TokenType) int {
+	i := p.index
+	c := 0
+
+	for {
+		if p.eof() || p.tokens[i].Type == TokenTypeCloseParen {
+			break
+		}
+
+		if p.tokens[i].Type == divider {
+			c++
+		}
+
+		i++
+	}
+
+	return c
 }

@@ -68,6 +68,7 @@ type ForExpression struct {
 	declaration           Stmter
 	condition             Stmter
 	incrementalExpression Stmter
+	afterCondition        Stmter
 	body                  []Stmter
 }
 

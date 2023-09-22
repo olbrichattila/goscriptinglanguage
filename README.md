@@ -278,12 +278,35 @@ if (1 == 2) {
 ```
 
 ### For loop
+There are 3 flavours of for loop, one of them acts like incremental for loop, the others are do and while loops, therefore no need to have separate while and do.
+
+
 Example:
+### Incremental for
 ```
 for (let i = 0; i < 10 ; i = i + 1) {
     print(i)
 }
 ```
+### do for
+```
+let i = 0;
+for (i < 10) {
+    print(i)
+    i = i + 1
+}
+
+```
+### while for
+```
+let i = 0;
+for {
+    print(i)
+    i = i + 1
+}(i < 10)
+```
+
+
 ## String assignment and comparision
 ```
 const a = "Arnold";

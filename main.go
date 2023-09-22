@@ -12,7 +12,7 @@ func main() {
 		fmt.Println(err)
 		return
 	}
-	mode := 2
+	mode := 3
 
 	if len(os.Args) > 1 {
 		if os.Args[1] == "prompt" {
@@ -47,7 +47,7 @@ func testTokenizer() {
 
 func testing(env *Environments) {
 
-	s, _ := readFile("./example_else.gl")
+	s, _ := readFile("./examples/for2.gl")
 
 	p := newParser()
 	parsed, err := p.produceAST(s)

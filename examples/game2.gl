@@ -5,6 +5,8 @@ println("I have a number im my mind between ""0 and 100"", let see if you can fi
 for (let i = 0; i < 1; i = 0) {
     println("Your tip?")
     tip = strToNum(input())
+
+    // Check logic
     if (tip == number) {
         println("Heureka, you got it")
         i = 1
