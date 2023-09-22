@@ -2,8 +2,6 @@ Change error to custom error with trace, and as it drills down to the source lev
 create a function which will display the line nr and character pos with an example bit of code
 for each trace if there are more
 
-Add file read and write functions
-
 Add Switch case
 Add read from str input
 Add db functions
