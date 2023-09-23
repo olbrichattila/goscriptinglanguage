@@ -54,6 +54,12 @@ func (i *Interpreter) evalConditionDeclaration(cnd *ConditionDeclaration, env *E
 		return i.evalStringConditionExpr(*lsVal, *rsVal, cnd.operator)
 	}
 
+	lsBVal, okBLs := lhs.(*BoolVal)
+	rsBVal, okBRs := rhs.(*BoolVal)
+	if okBLs && okBRs {
+		return i.evalBoolConditionExpr(*lsBVal, *rsBVal, cnd.operator)
+	}
+
 	return makeNull(), nil
 }
 

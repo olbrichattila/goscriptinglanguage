@@ -28,6 +28,10 @@ const (
 	TokenTypeDoubeEqual
 	TokenTypeNotEqual
 	TokenTypeNot
+
+	TokenTypeAnd
+	TokenTypeOr
+
 	TokenTypeBinaryOperator
 	TokenTypeLet
 	TokenTypeConst
@@ -154,6 +158,22 @@ func (t *Tokenizer) tokenize(sourceCode string) ([]Token, *CustomError) {
 				tokens = append(tokens, Token{Type: TokenTypeGreater, Value: ">", Pos: i})
 			}
 			i++
+		case "&":
+			if i < srcLen-1 && src[i+1] == "&" {
+				tokens = append(tokens, Token{Type: TokenTypeAnd, Value: "&", Pos: i})
+				i++
+				i++
+			} else {
+				return nil, newCustomError("Condition requries doube &").addTrace(i)
+			}
+		case "|":
+			if i < srcLen-1 && src[i+1] == "|" {
+				tokens = append(tokens, Token{Type: TokenTypeOr, Value: "|", Pos: i})
+				i++
+				i++
+			} else {
+				return nil, newCustomError("Condition requries doube |").addTrace(i)
+			}
 		default:
 			tk, index, err := t.tokenizeComplex(src, i)
 			if err != nil {

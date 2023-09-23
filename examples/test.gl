@@ -1,10 +1,24 @@
-let text = "hello";
-for (let i = 0;i<len(text);i = i + 1) {
-    println(numToStr(i) + " " + substr(text, i, i+1) )
-}
-// x = 10;
-let ln = len(text) - 1;
-for (let z = ln;z >= 0;z = z = z -1) {
-//for (let z = len(text);z >= 0;z = z = z -1) { // Todo check why errors out
-    println(numToStr(z) + " " + substr(text, z, z+1) )
+let x = true || true;
+println(x)
+
+x = true || false
+println(x)
+
+x = false || false
+println(x)
+
+x = false && false
+println(x)
+
+x = true && false
+println(x)
+
+x = false && true
+println(x)
+
+x = true && true
+println(x)
+// todo check if it can be change to work without extra braces
+if ((1 > 0) || (2 > 1)) {
+    println("Condition met")
 }

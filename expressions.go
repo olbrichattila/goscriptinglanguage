@@ -206,6 +206,20 @@ func (i *Interpreter) evalStringConditionExpr(lhs, rhs StringVal, operator strin
 	return makeBool(result), nil
 }
 
+func (i *Interpreter) evalBoolConditionExpr(lhs, rhs BoolVal, operator string) (*BoolVal, *CustomError) {
+	var result bool
+	switch operator {
+	case "&":
+		result = lhs.Value && rhs.Value
+	case "|":
+		result = lhs.Value || rhs.Value
+	default:
+		return nil, newCustomError(fmt.Sprintf("Logical conditional operator %s not implemented", operator))
+	}
+
+	return makeBool(result), nil
+}
+
 func (i *Interpreter) evalIfExpr(ifE *IfExpression, env *Environments) (RuntimeVal, *CustomError) {
 	var cond RuntimeVal
 	var err *CustomError

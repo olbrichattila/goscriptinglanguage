@@ -1,5 +1,9 @@
+Add logical operator !
 Add Switch case
-Add read from str input
+Add break
+Add continue
+
+Add read from std in
 Add db functions
 Add date functions
 Add time functions
@@ -7,6 +11,6 @@ Add time functions
 Add exec() -> operating system level
 Add classes
 Fix: This AST node has not yet been setup for interpretation MemberExpression (expr.gl)
-Add logical operators, && || !
+
 Add Promise?
 Add Reflections?
