@@ -81,7 +81,14 @@ func (i *Interpreter) evalAssignment(node *AssignmentExpr, env *Environments) (R
 	if err != nil {
 		return nil, i.formatError(err, node.Pos())
 	}
-	return env.assignVar(varname, evaulated)
+
+	result, err := env.assignVar(varname, evaulated)
+	if err != nil {
+		err.addTrace(node.Pos())
+		err.addTrace(node.assigne.Pos())
+	}
+
+	return result, err
 }
 
 func (i *Interpreter) evalObjectExpr(node *ObjectLiteral, env *Environments) (RuntimeVal, *CustomError) {
@@ -152,7 +159,7 @@ func (i *Interpreter) evalCallExpr(expr *CallExpression, env *Environments) (Run
 		return result, nil
 	}
 
-	return nil, newCustomError("cannot call value which is not a function")
+	return nil, newCustomError("cannot call value which is not a function").addTrace(expr.Pos())
 }
 
 func (i *Interpreter) evalNumericConditionExpr(lhs, rhs NumberVal, operator string) (*BoolVal, *CustomError) {
@@ -269,6 +276,9 @@ func (i *Interpreter) evalForExpr(forE *ForExpression, env *Environments) (Runti
 
 		if forE.incrementalExpression != nil {
 			_, err = i.evaluate(forE.incrementalExpression, env)
+			if err != nil {
+				return nil, i.formatError(err, forE.Pos())
+			}
 		}
 	}
 

@@ -15,7 +15,6 @@ for {
         max = tip
     } elseif(answer == "o") {
         println("Heureka, good tip")
-        i = 2
     } else {
         println("Incorrect letter, try again")
     }

@@ -141,7 +141,6 @@ func displayStruct(s Stmter) {
 
 func displayError(err *CustomError, src *string) {
 	// @todo refactor this, maybe separat struct
-	fmt.Println(err)
 	red := "\033[31m"
 	green := "\033[32m"
 	reset := "\033[0m"
@@ -162,7 +161,6 @@ func displayError(err *CustomError, src *string) {
 			}
 
 			if i == tr {
-				fmt.Println(i, tr, l)
 				startPos := i - 3
 				if startPos < 0 {
 					startPos = 0
@@ -180,6 +178,7 @@ func displayError(err *CustomError, src *string) {
 					str[startPos:endPos],
 				)
 			}
+			pos++
 		}
 
 		if tr == l {

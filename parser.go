@@ -651,6 +651,7 @@ func (p *Parser) parseArgumentsLists() ([]*Stmter, *CustomError) {
 
 func (p *Parser) parsePrimaryExpr() (Stmter, *CustomError) {
 	tk := p.at().Type
+	pos := p.at().Pos
 
 	switch tk {
 	case TokenTypeIdentifier:
@@ -676,7 +677,7 @@ func (p *Parser) parsePrimaryExpr() (Stmter, *CustomError) {
 
 		return value, nil
 	default:
-		return nil, newCustomError(fmt.Sprintf("Invalid token type %d %T", p.at().Type, p.at().Value)).addTrace(p.at().Pos)
+		return nil, newCustomError(fmt.Sprintf("Invalid token type %d %T", p.at().Type, p.at().Value)).addTrace(pos)
 	}
 }
 
