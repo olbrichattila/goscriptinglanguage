@@ -389,7 +389,7 @@ func (p *Parser) parseAssignmentExpr() (Stmter, *CustomError) {
 
 	if p.at().Type == TokenTypeEquals {
 		p.next()
-		value, err := p.parseAssignmentExpr()
+		value, err := p.parseObjectExpr()
 		if err != nil {
 			return nil, err
 		}
