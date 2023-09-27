@@ -47,7 +47,7 @@ func testTokenizer() {
 
 func testing(env *Environments) {
 
-	s, _ := readFile("./examples/test.gl")
+	s, _ := readFile("./examples/break.gl")
 
 	p := newParser()
 	parsed, err := p.produceAST(s)

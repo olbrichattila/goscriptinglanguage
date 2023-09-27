@@ -250,6 +250,8 @@ func (i *Interpreter) evalIfExpr(ifE *IfExpression, env *Environments) (RuntimeV
 func (i *Interpreter) evalForExpr(forE *ForExpression, env *Environments) (RuntimeVal, *CustomError) {
 	var err *CustomError
 	var result RuntimeVal = makeNull()
+	braked := false
+	continued := false
 
 	if forE.declaration != nil {
 		_, err := i.evaluate(forE.declaration, env)
@@ -272,9 +274,26 @@ func (i *Interpreter) evalForExpr(forE *ForExpression, env *Environments) (Runti
 
 		for _, statement := range forE.body {
 			result, err = i.evaluate(statement, env)
+			if _, ok := result.(*BreakVal); ok {
+				braked = true
+				break
+			}
+
+			if _, ok := result.(*ContinueVal); ok {
+				continued = true
+				break
+			}
 			if err != nil {
 				return nil, i.formatError(err, forE.Pos())
 			}
+		}
+
+		if braked == true {
+			break
+		}
+
+		if continued == true {
+			continue
 		}
 
 		if forE.afterCondition != nil {
@@ -297,4 +316,12 @@ func (i *Interpreter) evalForExpr(forE *ForExpression, env *Environments) (Runti
 	}
 
 	return result, nil
+}
+
+func (i *Interpreter) evalBreakExpr(forE *BreakExpression, env *Environments) (RuntimeVal, *CustomError) {
+	return makeBreak(), nil
+}
+
+func (i *Interpreter) evalContinueExpr(forE *ContinueExpression, env *Environments) (RuntimeVal, *CustomError) {
+	return makeContinue(), nil
 }

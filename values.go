@@ -10,6 +10,8 @@ const (
 	ValueObject
 	ValueNativeFunction
 	ValueFunction
+	ValueBreak
+	ValueContinue
 )
 
 type RuntimeVal interface {
@@ -33,6 +35,14 @@ type StringVal struct {
 type BoolVal struct {
 	Type  ValueType
 	Value bool
+}
+
+type BreakVal struct {
+	Type ValueType
+}
+
+type ContinueVal struct {
+	Type ValueType
 }
 
 type ObjectVal struct {
@@ -67,6 +77,14 @@ func makeNull() *NullVal {
 
 func makeBool(v bool) *BoolVal {
 	return &BoolVal{Type: ValueBoolean, Value: v}
+}
+
+func makeBreak() *BreakVal {
+	return &BreakVal{Type: ValueBreak}
+}
+
+func makeContinue() *ContinueVal {
+	return &ContinueVal{Type: ValueContinue}
 }
 
 func makeNativeFn(call FunctionCall) *NativeFnValue {

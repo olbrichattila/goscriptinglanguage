@@ -319,6 +319,22 @@ for {
 }(i < 10)
 ```
 
+## Break and continue
+```
+let i = 0;
+for {
+    i = i + 1
+    if (i <= 10) {
+        continue
+    }
+
+    if (i > 20) {
+        break
+    }
+    
+    println(i)
+}
+```
 
 ## String assignment and comparision
 ```

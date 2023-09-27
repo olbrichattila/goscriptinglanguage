@@ -16,6 +16,8 @@ const (
 	NodeTypeMemberExpression    = "MemberExpression"
 	NodeTypeCallExpression      = "CallExpression"
 	NodeTypeConditionExpression = "ConditionDeclaration"
+	NodeTypeBreakExpression     = "BreakExpression"
+	NodeTypeContinueExpression  = "ContinueExpression"
 
 	// Literals
 	NodeTypeProperty       = "Property"
@@ -76,6 +78,14 @@ type ForExpression struct {
 	incrementalExpression Stmter
 	afterCondition        Stmter
 	body                  []Stmter
+}
+
+type BreakExpression struct {
+	*Stmt
+}
+
+type ContinueExpression struct {
+	*Stmt
 }
 
 type Expr struct {

@@ -73,8 +73,12 @@ func (p *Parser) parseStmt() (Stmter, *CustomError) {
 		return p.parseFunctionDeclaration()
 	case TokenTypeIf:
 		return p.parseIfExpression()
-	case TokenFor:
+	case TokenTypeFor:
 		return p.parseForExpression()
+	case TokenTypeBreak:
+		return p.parseBreakExpression()
+	case TokenTypeContinue:
+		return p.parseContinueExpression()
 	default:
 		return p.parseExpr()
 	}
@@ -342,6 +346,20 @@ func (p *Parser) parseForExpression() (Stmter, *CustomError) {
 		afterCondition:        afterCondition,
 		incrementalExpression: incrementalExpression,
 		body:                  body,
+	}, nil
+}
+
+func (p *Parser) parseBreakExpression() (Stmter, *CustomError) {
+	p.next()
+	return &BreakExpression{
+		Stmt: &Stmt{kind: NodeTypeBreakExpression, pos: p.at().Pos},
+	}, nil
+}
+
+func (p *Parser) parseContinueExpression() (Stmter, *CustomError) {
+	p.next()
+	return &ContinueExpression{
+		Stmt: &Stmt{kind: NodeTypeContinueExpression, pos: p.at().Pos},
 	}, nil
 }
 

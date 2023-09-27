@@ -28,10 +28,8 @@ const (
 	TokenTypeDoubeEqual
 	TokenTypeNotEqual
 	TokenTypeNot
-
 	TokenTypeAnd
 	TokenTypeOr
-
 	TokenTypeBinaryOperator
 	TokenTypeLet
 	TokenTypeConst
@@ -40,7 +38,9 @@ const (
 	TokenTypeIf
 	TokenTypeElse
 	TokenTypeElseIf
-	TokenFor
+	TokenTypeFor
+	TokenTypeBreak
+	TokenTypeContinue
 	TokenTypeEOF
 )
 
@@ -60,13 +60,15 @@ func newTokenizer() *Tokenizer {
 
 func (t *Tokenizer) tokenize(sourceCode string) ([]Token, *CustomError) {
 	t.keywords = map[string]TokenType{
-		"let":    TokenTypeLet,
-		"const":  TokenTypeConst,
-		"fn":     TokenTypeFn,
-		"if":     TokenTypeIf,
-		"else":   TokenTypeElse,
-		"elseif": TokenTypeElseIf,
-		"for":    TokenFor,
+		"let":      TokenTypeLet,
+		"const":    TokenTypeConst,
+		"fn":       TokenTypeFn,
+		"if":       TokenTypeIf,
+		"else":     TokenTypeElse,
+		"elseif":   TokenTypeElseIf,
+		"for":      TokenTypeFor,
+		"break":    TokenTypeBreak,
+		"continue": TokenTypeContinue,
 	}
 
 	var tokens []Token

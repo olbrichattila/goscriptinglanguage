@@ -1,0 +1,14 @@
+let i = 0;
+for {
+    i = i + 1
+    if (i <= 10) {
+        continue
+    }
+
+    if (i > 20) {
+        break
+    }
+    
+    println(i)
+}
+
