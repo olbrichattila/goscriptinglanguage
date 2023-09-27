@@ -1,5 +1,4 @@
 for (let t = 1; t < 30; t = t + 1) {
-
     switch (t) {
         case 1:
             println("case 1")
@@ -16,13 +15,11 @@ for (let t = 1; t < 30; t = t + 1) {
             break
         default:
             println("  default")
-        
     }
 }
 
 
 let s = "test";
-
 switch (s) {
     case "":
         println("empty string")
@@ -35,5 +32,4 @@ switch (s) {
         break
     default:
         println("  string default")
-    
 }

@@ -336,6 +336,48 @@ for {
 }
 ```
 
+## Switch case:
+### Numbers
+```
+for (let t = 1; t < 30; t = t + 1) {
+    switch (t) {
+        case 1:
+            println("case 1")
+            break
+        case 3:
+        case 4:
+            println("case 3, 4")
+            break
+        case 5:
+            println("case 5")
+            break
+        case 15:
+            println("case 15")
+            break
+        default:
+            println("  default")
+    }
+}
+```
+### Strings
+```
+let s = "test";
+switch (s) {
+    case "":
+        println("empty string")
+        break
+    case "test":
+        println("test string")
+        break
+    case "nontest":
+        println("case 15")
+        break
+    default:
+        println("  string default")
+}
+
+```
+
 ## String assignment and comparision
 ```
 const a = "Arnold";
