@@ -1,0 +1,21 @@
+// This is an examle, reading a file
+// and displaying in separate lines
+
+fn displayChar(char) {
+    if (char == " ") {
+       println("")
+    } else {
+       print(char)
+    }
+}
+
+let content = fileRead("test.txt");
+let contentLength = len(content);
+let char;
+
+for (let i = 0; i < contentLength; i = i + 1) {
+    char = substr(content, i, i + 1)
+    displayChar(char)
+}
+
+
