@@ -1,7 +1,4 @@
 Add logical operator !
-Add Switch case
-Add break
-Add continue
 
 Add read from std in
 Add db functions
