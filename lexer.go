@@ -39,6 +39,9 @@ const (
 	TokenTypeElse
 	TokenTypeElseIf
 	TokenTypeFor
+	TokenTypeSwitch
+	TokenTypeCase
+	TokenTypeDefault
 	TokenTypeBreak
 	TokenTypeContinue
 	TokenTypeEOF
@@ -67,6 +70,9 @@ func (t *Tokenizer) tokenize(sourceCode string) ([]Token, *CustomError) {
 		"else":     TokenTypeElse,
 		"elseif":   TokenTypeElseIf,
 		"for":      TokenTypeFor,
+		"switch":   TokenTypeSwitch,
+		"case":     TokenTypeCase,
+		"default":  TokenTypeDefault,
 		"break":    TokenTypeBreak,
 		"continue": TokenTypeContinue,
 	}

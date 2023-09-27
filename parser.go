@@ -79,6 +79,8 @@ func (p *Parser) parseStmt() (Stmter, *CustomError) {
 		return p.parseBreakExpression()
 	case TokenTypeContinue:
 		return p.parseContinueExpression()
+	case TokenTypeSwitch:
+		return p.parseSwitchExpression()
 	default:
 		return p.parseExpr()
 	}
@@ -346,6 +348,93 @@ func (p *Parser) parseForExpression() (Stmter, *CustomError) {
 		afterCondition:        afterCondition,
 		incrementalExpression: incrementalExpression,
 		body:                  body,
+	}, nil
+}
+
+func (p *Parser) parseSwitchExpression() (Stmter, *CustomError) {
+	// @Todo refactor this, too complex
+	p.next()
+	_, err := p.expect(TokenTypeOpenParen, "Open parenthesis expected after switch")
+	if err != nil {
+		return nil, err
+	}
+
+	v, err := p.parseExpr()
+	if err != nil {
+		return nil, err
+	}
+
+	_, err = p.expect(TokenTypeCloseParen, "Close parenthesis expected after switch statement value definition")
+	if err != nil {
+		return nil, err
+	}
+
+	_, err = p.expect(TokenTypeOpenBrace, "Open brace expected after switch condition")
+	if err != nil {
+		return nil, err
+	}
+
+	var body []SwitchCaseExpression
+	for {
+		if p.at().Type == TokenTypeEOF || p.at().Type == TokenTypeCloseBrace {
+			break
+		}
+
+		if p.at().Type == TokenTypeCase || p.at().Type == TokenTypeDefault {
+			prevToken := p.next()
+			valueToken := p.at()
+
+			var comp RuntimeVal
+
+			if prevToken.Type == TokenTypeDefault {
+				comp = makeBool(true)
+			} else if valueToken.Type == TokenTypeNumber {
+				n, err := strconv.ParseFloat(valueToken.Value, 64)
+				if err != nil {
+					return nil, newCustomError(fmt.Sprintf("%s is not a number", valueToken.Value)).addTrace(valueToken.Pos)
+				}
+				comp = makeNumber(n)
+				p.next()
+			} else if valueToken.Type == TokenTypeString {
+				comp = makeString(valueToken.Value)
+				p.next()
+			} else if valueToken.Type != TokenTypeDefault {
+				return nil, newCustomError("Swich case condition can be string or numbar only").addTrace(valueToken.Pos)
+			}
+
+			_, err := p.expect(TokenTypeColon, "Colon expected after case value")
+			if err != nil {
+				return nil, err
+			}
+
+			var swBody []Stmter
+
+			for {
+				if p.at().Type == TokenTypeEOF || p.at().Type == TokenTypeCase || p.at().Type == TokenTypeDefault || p.at().Type == TokenTypeCloseBrace {
+					break
+				}
+
+				s, err := p.parseStmt()
+				if err != nil {
+					return nil, err
+				}
+
+				swBody = append(swBody, s)
+
+			}
+			body = append(body, SwitchCaseExpression{compare: comp, body: swBody, pos: p.at().Pos})
+		}
+	}
+
+	_, err = p.expect(TokenTypeCloseBrace, "CV")
+	if err != nil {
+		return nil, err
+	}
+
+	return &SwitchExpression{
+		Stmt:  &Stmt{kind: NodeTypeSwitchExpression, pos: p.at().Pos},
+		value: v,
+		body:  body,
 	}, nil
 }
 

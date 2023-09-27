@@ -325,3 +325,78 @@ func (i *Interpreter) evalBreakExpr(forE *BreakExpression, env *Environments) (R
 func (i *Interpreter) evalContinueExpr(forE *ContinueExpression, env *Environments) (RuntimeVal, *CustomError) {
 	return makeContinue(), nil
 }
+
+func (i *Interpreter) evalSwitchExpr(sw *SwitchExpression, env *Environments) (RuntimeVal, *CustomError) {
+	// @Todo refactor this, too complex
+	cv, err := i.evaluate(sw.value, env)
+	if err != nil {
+		err.addTrace(sw.Pos())
+		return nil, err
+	}
+
+	for _, swcase := range sw.body {
+
+		if _, ok := swcase.compare.(*BoolVal); ok {
+			isBreak, err := i.evalBody(swcase.body, env)
+			if err != nil {
+				return nil, err
+			}
+			if isBreak {
+				break
+			}
+			continue
+		}
+		if a, ok := cv.(*NumberVal); ok {
+			if b, ok := swcase.compare.(*NumberVal); ok {
+				if a.Value == b.Value {
+					isBreak, err := i.evalBody(swcase.body, env)
+					if err != nil {
+						return nil, err
+					}
+					if isBreak {
+						break
+					}
+				}
+				continue
+			}
+		}
+
+		if a, ok := cv.(*StringVal); ok {
+			if b, ok := swcase.compare.(*StringVal); ok {
+				if a.Value == b.Value {
+					isBreak, err := i.evalBody(swcase.body, env)
+					if err != nil {
+						return nil, err
+					}
+					if isBreak {
+						break
+					}
+				}
+				continue
+			}
+		}
+
+		runError := newCustomError(fmt.Sprintf("Type error in switch - case %T, %T", cv, swcase.compare)).addTrace(sw.Pos())
+		runError.addTrace(swcase.pos)
+
+		return nil, runError
+	}
+	return makeNull(), nil
+}
+
+func (i *Interpreter) evalBody(items []Stmter, env *Environments) (bool, *CustomError) {
+	var lastRValue RuntimeVal
+	var err *CustomError
+	for _, item := range items {
+		lastRValue, err = i.evaluate(item, env)
+		if err != nil {
+			return false, err
+		}
+		if _, ok := lastRValue.(*BreakVal); ok {
+			return true, nil
+		}
+	}
+
+	return false, nil
+
+}

@@ -9,6 +9,7 @@ const (
 	NodeTypeFunctionDeclaration = "FunctionDeclaration"
 	NodeTypeIfExpression        = "IfExpressions"
 	NodeTypeForExpression       = "ForExpression"
+	NodeTypeSwitchExpression    = "SwitchExpression"
 
 	// EXPRESSIONS
 	NodeTypeBinaryExpession     = "BinaryExpession"
@@ -78,6 +79,18 @@ type ForExpression struct {
 	incrementalExpression Stmter
 	afterCondition        Stmter
 	body                  []Stmter
+}
+
+type SwitchExpression struct {
+	*Stmt
+	value Stmter
+	body  []SwitchCaseExpression
+}
+
+type SwitchCaseExpression struct {
+	compare RuntimeVal
+	pos     int
+	body    []Stmter
 }
 
 type BreakExpression struct {
