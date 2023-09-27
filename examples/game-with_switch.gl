@@ -1,0 +1,25 @@
+// This is the same game with switch case
+println("Think a number between 1 and 100, I'll try to find out what it is")
+
+let min = 0;
+let max = 100;
+let tip;
+let answer;
+for {
+    tip = round(min + (max - min) / 2)
+    println("My tip is " + numToStr(tip) + " (b) for bigger, (s) for smaller, (o) for ok")
+    answer = input()
+    switch (answer) {
+        case "b":
+            min = tip
+            break
+        case "s":
+            max = tip
+            break
+        case "o":
+            println("Heureka, good tip")
+            break
+        default:
+            println("Incorrect letter, try again")
+    }
+}(answer != "o")
