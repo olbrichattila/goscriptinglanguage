@@ -1,4 +1,9 @@
 Add logical operator !
+Add arrays
+Add Split
+Add Explode
+
+Add Json Decode and Encode
 
 Add read from std in
 Add db functions
