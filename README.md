@@ -1,12 +1,13 @@
-# Golang scripting language
+# Golang Scripting Language
 
-## This project is under development, how to create your own language in golang.
-This is not intented to be a full featured language (or who knows), only an example how a language interpreter works.
+## This project is under development – How to create your own language in Go
 
-Current status:
+This is not intended to be a fully featured language (though who knows what the future holds), but rather an example of how a language interpreter works.
 
-Lexer implemented to tokenize the code
-interpreter can evaluate experssions:
+### Current Status:
+- Lexer implemented to tokenize the code
+- Interpreter can evaluate expressions
+
 
 Example:
 
@@ -19,7 +20,7 @@ Aty programming language
 
 ```
 
-### Try: Evaluate experssion:
+### Try: Evaluate expression:
 Example:
 ```
 1 + 5 + 6 /2 * (15 - 2)   
@@ -51,7 +52,7 @@ Aty programming language
 &{1 11}
 ```
 
-### Variable assingnmets
+### Variable assignments
 Example:
 
 ```
@@ -64,7 +65,7 @@ x = x + 1
 
 ### Definition of complex objects:
 
-Exampe:
+Example:
 ```
 let foo = 15 - 3;
 const obj = {
@@ -101,7 +102,7 @@ let mod = 0;
 for (let i = 0; i < 100; i = i + 1) {
     mod = i % 3
     if (mod == 0) {
-        print(numToStr(i) + " can be devided by 3")
+        print(numToStr(i) + " can be divided by 3")
     }
 
     if (mod != 0) {
@@ -291,8 +292,7 @@ if (1 == 2) {
 ```
 
 ### For loop
-There are 3 flavours of for loop, one of them acts like incremental for loop, the others are do and while loops, therefore no need to have separate while and do.
-
+There are three variations of the for loop. One behaves like an incremental for loop, while the other two act as do-while and while loops. Therefore, there is no need to have separate while and do loops.
 
 Example:
 ### Incremental for
@@ -397,4 +397,8 @@ print ((a >= b))
 - classes
 
 and more..
+
+## About me:
+Learn more about me on my personal website. https://attilaolbrich.co.uk/menu/my-story
+Check out my latest blog blog at my personal page. https://attilaolbrich.co.uk/blog/1/single
 
