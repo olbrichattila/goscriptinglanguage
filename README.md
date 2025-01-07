@@ -399,6 +399,5 @@ print ((a >= b))
 and more..
 
 ## About me:
-Learn more about me on my personal website. https://attilaolbrich.co.uk/menu/my-story
-Check out my latest blog blog at my personal page. https://attilaolbrich.co.uk/blog/1/single
-
+- Learn more about me on my personal website. https://attilaolbrich.co.uk/menu/my-story
+- Check out my latest blog blog at my personal page. https://attilaolbrich.co.uk/blog/1/single
