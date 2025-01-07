@@ -707,7 +707,7 @@ func (p *Parser) parseMemberExpr() (Stmter, *CustomError) {
 		object = &MemberExpression{
 			Stmt:     &Stmt{kind: NodeTypeMemberExpression, pos: p.at().Pos},
 			object:   object,
-			propert:  property,
+			property: property,
 			computed: computed,
 		}
 	}

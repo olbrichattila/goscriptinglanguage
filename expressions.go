@@ -400,3 +400,23 @@ func (i *Interpreter) evalBody(items []Stmter, env *Environments) (bool, *Custom
 	return false, nil
 
 }
+
+func (i *Interpreter) evalMemberExpr(me *MemberExpression, env *Environments) (RuntimeVal, *CustomError) {
+	if expr, ok := me.object.(*MemberExpression); ok {
+		return i.evalMemberExpr(expr, env)
+	}
+
+	// x, err := i.evaluate(me.property, env)
+	x, err := i.evaluate(me.object, env)
+	if err != nil {
+		return nil, err
+	}
+
+	fmt.Println(x)
+	// if me.computed == false {
+	// 	return env.lookupVar(me.property.(*Identifier).symbol)
+	// }
+	// return i.evaluate(me.object[me.property.(*Identifier).symbol], env)
+
+	return nil, newCustomError("Implementation of member expression is in progress")
+}

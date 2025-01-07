@@ -153,7 +153,7 @@ type CallExpression struct {
 type MemberExpression struct {
 	*Stmt
 	object   Stmter
-	propert  Stmter
+	property Stmter
 	computed bool
 }
 

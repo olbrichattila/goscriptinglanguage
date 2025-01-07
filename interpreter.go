@@ -44,6 +44,8 @@ func (i *Interpreter) evaluate(astNode Stmter, env *Environments) (RuntimeVal, *
 		return i.evalContinueExpr(astNode.(*ContinueExpression), env)
 	case NodeTypeSwitchExpression:
 		return i.evalSwitchExpr(astNode.(*SwitchExpression), env)
+	case NodeTypeMemberExpression:
+		return i.evalMemberExpr(astNode.(*MemberExpression), env)
 	default:
 		return nil, newCustomError(fmt.Sprintf("This AST node has not yet been setup for interpretation %s", kind)).addTrace(astNode.Pos())
 	}
